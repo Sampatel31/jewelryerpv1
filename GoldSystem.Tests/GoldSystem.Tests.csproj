@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
@@ -28,6 +29,7 @@
     <ProjectReference Include="..\GoldSystem.Core\GoldSystem.Core.csproj" />
     <ProjectReference Include="..\GoldSystem.Data\GoldSystem.Data.csproj" />
     <ProjectReference Include="..\GoldSystem.RateEngine\GoldSystem.RateEngine.csproj" />
+    <ProjectReference Include="..\GoldSystem.Sync\GoldSystem.Sync.csproj" />
   </ItemGroup>
 
 </Project>
