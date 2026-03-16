@@ -26,27 +26,29 @@ public class SyncQueryService
         => await _context.SyncQueues
             .CountAsync(s => s.BranchId == branchId && s.Status == "Pending", cancellationToken);
 
-    /// <summary>Sync status summary for all active non-owner branches.</summary>
+    /// <summary>Sync status summary for a specific branch.</summary>
     public async Task<IEnumerable<SyncStatusSummary>> GetSyncStatusAsync(int branchId, CancellationToken cancellationToken = default)
     {
-        var branches = await _context.Branches
+        var branch = await _context.Branches
             .Where(b => b.IsActive && b.BranchId == branchId)
-            .ToListAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
 
-        var result = new List<SyncStatusSummary>();
-        foreach (var branch in branches)
+        if (branch is null)
+            return Enumerable.Empty<SyncStatusSummary>();
+
+        // Fetch all three counters for this branch in parallel
+        var pendingTask = _context.SyncQueues.CountAsync(s => s.BranchId == branchId && s.Status == "Pending", cancellationToken);
+        var failedTask  = _context.SyncQueues.CountAsync(s => s.BranchId == branchId && s.Status == "Failed",  cancellationToken);
+        var lastSyncTask = _context.SyncQueues
+            .Where(s => s.BranchId == branchId && s.Status == "Synced")
+            .MaxAsync(s => (DateTime?)s.SyncedAt, cancellationToken);
+
+        await Task.WhenAll(pendingTask, failedTask, lastSyncTask);
+
+        return new[]
         {
-            var pending = await _context.SyncQueues
-                .CountAsync(s => s.BranchId == branch.BranchId && s.Status == "Pending", cancellationToken);
-            var failed = await _context.SyncQueues
-                .CountAsync(s => s.BranchId == branch.BranchId && s.Status == "Failed", cancellationToken);
-            var lastSynced = await _context.SyncQueues
-                .Where(s => s.BranchId == branch.BranchId && s.Status == "Synced")
-                .MaxAsync(s => (DateTime?)s.SyncedAt, cancellationToken);
-
-            result.Add(new SyncStatusSummary(branch.BranchId, branch.Name, pending, failed, lastSynced));
-        }
-        return result;
+            new SyncStatusSummary(branch.BranchId, branch.Name, pendingTask.Result, failedTask.Result, lastSyncTask.Result)
+        };
     }
 
     /// <summary>The most recent successful sync timestamp for a branch.</summary>

@@ -63,6 +63,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
+        // EF Core's Update is synchronous; cancellationToken applies during SaveChangesAsync
         DbSet.Update(entity);
         return Task.CompletedTask;
     }
@@ -70,6 +71,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
+        // EF Core's Remove is synchronous; cancellationToken applies during SaveChangesAsync
         DbSet.Remove(entity);
         return Task.CompletedTask;
     }
@@ -77,6 +79,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     public virtual Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entities);
+        // EF Core's RemoveRange is synchronous; cancellationToken applies during SaveChangesAsync
         DbSet.RemoveRange(entities);
         return Task.CompletedTask;
     }
