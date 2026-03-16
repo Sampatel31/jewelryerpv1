@@ -1,4 +1,6 @@
 ﻿using GoldSystem.Data;
+using GoldSystem.Data.Repositories;
+using GoldSystem.Data.Services;
 using GoldSystem.RateEngine;
 using GoldSystem.RateEngine.Interfaces;
 using GoldSystem.RateEngine.Services;
@@ -81,6 +83,13 @@ public partial class App : Application
 
         // Navigation
         services.AddSingleton<Services.NavigationService>();
+
+        // Repository Pattern / Data Access Layer
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<InventoryQueryService>();
+        services.AddScoped<BillingQueryService>();
+        services.AddScoped<SyncQueryService>();
     }
 
     protected override async void OnExit(ExitEventArgs e)
