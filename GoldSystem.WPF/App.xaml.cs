@@ -1,5 +1,9 @@
 ﻿using GoldSystem.Data;
+using GoldSystem.RateEngine;
+using GoldSystem.RateEngine.Interfaces;
+using GoldSystem.RateEngine.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -30,6 +34,11 @@ public partial class App : Application
 
         _host = Host.CreateDefaultBuilder()
             .UseSerilog()
+            .ConfigureAppConfiguration((_, cfg) =>
+            {
+                cfg.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                   .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            })
             .ConfigureServices((context, services) =>
             {
                 ConfigureServices(services, context);
@@ -47,6 +56,25 @@ public partial class App : Application
         // Database
         services.AddDbContext<GoldDbContext>(options =>
             options.UseSqlite($"Data Source={Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GoldSystem.db")}"));
+        services.AddDbContextFactory<GoldDbContext>(options =>
+            options.UseSqlite($"Data Source={Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GoldSystem.db")}"),
+            ServiceLifetime.Singleton);
+
+        // Configuration options
+        services.Configure<GoldRateOptions>(
+            context.Configuration.GetSection(GoldRateOptions.SectionName));
+        services.Configure<RateBroadcastOptions>(
+            context.Configuration.GetSection(RateBroadcastOptions.SectionName));
+
+        // Rate Engine services
+        services.AddSingleton<IRateSource, McxRateScraper>();
+        services.AddSingleton<RateRepository>();
+        services.AddSingleton<RateBroadcaster>();
+        services.AddSingleton<RateChangedEventPublisher>();
+        services.AddSingleton<RateConfigurationService>();
+        services.AddHostedService<RateSyncBackgroundService>();
+        services.AddHostedService<RateListenerService>();
+        services.AddSingleton<ManualRateEntryService>();
 
         // Main window
         services.AddSingleton<MainWindow>();
