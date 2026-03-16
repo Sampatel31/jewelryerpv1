@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="GoldSystem.AI/GoldSystem.AI.csproj" />
+  <Project Path="GoldSystem.Core/GoldSystem.Core.csproj" />
+  <Project Path="GoldSystem.Data/GoldSystem.Data.csproj" />
+  <Project Path="GoldSystem.RateEngine/GoldSystem.RateEngine.csproj" />
+  <Project Path="GoldSystem.Reports/GoldSystem.Reports.csproj" />
+  <Project Path="GoldSystem.Sync/GoldSystem.Sync.csproj" />
+  <Project Path="GoldSystem.Tests/GoldSystem.Tests.csproj" />
+  <Project Path="GoldSystem.WPF/GoldSystem.WPF.csproj" />
+</Solution>
