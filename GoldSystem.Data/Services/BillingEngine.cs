@@ -226,7 +226,7 @@ public class BillingEngine : IBillingEngine
         return (false, string.Empty);
     }
 
-    public async Task LockBillAsync(int billId)
+    public async Task LockBillAsync(int billId, int userId = 0)
     {
         var bill = await _uow.Bills.GetByIdAsync(billId)
             ?? throw new KeyNotFoundException($"Bill {billId} not found");
@@ -236,14 +236,14 @@ public class BillingEngine : IBillingEngine
         await _uow.SaveChangesAsync();
 
         await _auditLogger.LogAsync(
-            userId: 0,
+            userId: userId,
             action: "BILL_LOCKED",
             tableName: "Bills",
             recordId: billId,
             branchId: bill.BranchId);
     }
 
-    public async Task PrintBillAsync(int billId)
+    public async Task PrintBillAsync(int billId, int userId = 0)
     {
         var bill = await _uow.Bills.GetByIdAsync(billId)
             ?? throw new KeyNotFoundException($"Bill {billId} not found");
@@ -251,6 +251,13 @@ public class BillingEngine : IBillingEngine
         bill.IsLocked = true;
         await _uow.Bills.UpdateAsync(bill);
         await _uow.SaveChangesAsync();
+
+        await _auditLogger.LogAsync(
+            userId: userId,
+            action: "BILL_PRINTED",
+            tableName: "Bills",
+            recordId: billId,
+            branchId: bill.BranchId);
 
         _logger.LogInformation("Bill {BillNo} printed and locked", bill.BillNo);
     }

@@ -35,6 +35,9 @@ public class BillingEngineTests : IDisposable
 
     // ─── Test-data helpers ───────────────────────────────────────────────────
 
+    private const int HuidLength = 10;
+    private const int TagNoLength = 6;
+
     private async Task<Branch> SeedBranchAsync(string code = "MUM")
     {
         var branch = new Branch
@@ -120,8 +123,8 @@ public class BillingEngineTests : IDisposable
     {
         var item = new Item
         {
-            HUID = $"HUID{Guid.NewGuid():N}"[..10],
-            TagNo = $"TAG{Guid.NewGuid():N}"[..6],
+            HUID = $"HUID{Guid.NewGuid():N}"[..HuidLength],
+            TagNo = $"TAG{Guid.NewGuid():N}"[..TagNoLength],
             CategoryId = categoryId,
             Name = "Gold Chain",
             Purity = purity,

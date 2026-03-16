@@ -26,6 +26,6 @@ public interface IBillingEngine
     Task<BillDto> GetBillAsync(int billId);
     Task<BillDto> GetBillByNoAsync(string billNo);
     Task<(bool IsLocked, string Reason)> CanEditBillAsync(int billId);
-    Task LockBillAsync(int billId);
-    Task PrintBillAsync(int billId);
+    Task LockBillAsync(int billId, int userId = 0);
+    Task PrintBillAsync(int billId, int userId = 0);
 }
