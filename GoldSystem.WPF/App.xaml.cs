@@ -1,4 +1,5 @@
-﻿using GoldSystem.Data;
+﻿using GoldSystem.Core.Services;
+using GoldSystem.Data;
 using GoldSystem.Data.Repositories;
 using GoldSystem.Data.Services;
 using GoldSystem.RateEngine;
@@ -83,6 +84,13 @@ public partial class App : Application
 
         // Navigation
         services.AddSingleton<Services.NavigationService>();
+
+        // Billing Engine services
+        services.AddScoped<IBillingEngine, BillingEngine>();
+        services.AddScoped<IBillNumberGenerator, BillNumberGeneratorService>();
+        services.AddScoped<IBillingValidationService, BillingValidationService>();
+        services.AddScoped<IAuditLogger, AuditLogger>();
+        services.AddScoped<GoldPriceCalculator>();
 
         // Repository Pattern / Data Access Layer
         services.AddScoped<IUnitOfWork, UnitOfWork>();

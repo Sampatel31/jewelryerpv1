@@ -12,7 +12,7 @@ public class BillRepository : Repository<Bill>, IBillRepository
 
     public async Task<Bill?> GetBillWithItemsAsync(int billId, CancellationToken cancellationToken = default)
         => await DbSet
-            .Include(b => b.BillItems)
+            .Include(b => b.BillItems).ThenInclude(bi => bi.Item)
             .Include(b => b.Payments)
             .Include(b => b.OldGoldExchanges)
             .Include(b => b.Customer)
