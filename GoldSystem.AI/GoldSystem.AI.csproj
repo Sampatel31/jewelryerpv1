@@ -2,9 +2,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GoldSystem.Core\GoldSystem.Core.csproj" />
+    <ProjectReference Include="..\GoldSystem.Data\GoldSystem.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
     <PackageReference Include="Microsoft.ML" Version="3.0.1" />
     <PackageReference Include="Microsoft.ML.TimeSeries" Version="3.0.1" />
   </ItemGroup>

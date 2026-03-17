@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GoldSystem.AI\GoldSystem.AI.csproj" />
     <ProjectReference Include="..\GoldSystem.Core\GoldSystem.Core.csproj" />
     <ProjectReference Include="..\GoldSystem.Data\GoldSystem.Data.csproj" />
     <ProjectReference Include="..\GoldSystem.RateEngine\GoldSystem.RateEngine.csproj" />

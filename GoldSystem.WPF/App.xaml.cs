@@ -1,4 +1,5 @@
-﻿using GoldSystem.Core.Services;
+﻿using GoldSystem.AI.Services;
+using GoldSystem.Core.Services;
 using GoldSystem.Data;
 using GoldSystem.Data.Repositories;
 using GoldSystem.Data.Services;
@@ -98,6 +99,14 @@ public partial class App : Application
         services.AddScoped<InventoryQueryService>();
         services.AddScoped<BillingQueryService>();
         services.AddScoped<SyncQueryService>();
+
+        // AI / ML.NET services
+        services.AddSingleton<ISalesForecastService, SalesForecastService>();
+        services.AddSingleton<ISlowStockDetectorService, SlowStockDetectorService>();
+        services.AddSingleton<IRateTrendAnalyzerService, RateTrendAnalyzerService>();
+        services.AddSingleton<IRestockSuggestionsService, RestockSuggestionsService>();
+        services.AddSingleton<IAnomalyDetectorService, AnomalyDetectorService>();
+        services.AddHostedService<ModelTrainingScheduler>();
     }
 
     protected override async void OnExit(ExitEventArgs e)
