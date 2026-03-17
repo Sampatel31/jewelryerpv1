@@ -8,34 +8,338 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance vm:CustomerViewModel}"
              Background="{DynamicResource MaterialDesignPaper}">
-    <Grid Margin="24">
+
+    <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
-            <materialDesign:PackIcon Kind="AccountGroup" Width="32" Height="32"
-                                     Foreground="#FFD700"
-                                     VerticalAlignment="Center" Margin="0,0,12,0" />
-            <TextBlock Text="Customers"
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+            <materialDesign:PackIcon Kind="AccountGroup" Width="28" Height="28"
+                                     Foreground="#FFD700" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock Text="Customer Management"
                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding StatusMessage}" Margin="16,0,0,0"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}"
+                       VerticalAlignment="Center" FontSize="12"/>
         </StackPanel>
 
-        <materialDesign:Card Grid.Row="1"
-                              materialDesign:ElevationAssist.Elevation="Dp2"
-                              Padding="24">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <materialDesign:PackIcon Kind="AccountGroup" Width="64" Height="64"
-                                         Foreground="#33FFD700"
-                                         HorizontalAlignment="Center" />
-                <TextBlock Text="Customers – Coming in Phase 10-11"
-                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                           HorizontalAlignment="Center"
-                           Foreground="{DynamicResource MaterialDesignBodyLight}"
-                           Margin="0,16,0,0" />
-            </StackPanel>
-        </materialDesign:Card>
+        <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex}"
+                    Style="{StaticResource MaterialDesignFilledTabControl}">
+
+            <!-- ── TAB 1: Customer List ── -->
+            <TabItem Header="Customers">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="320"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Customer list -->
+                    <Grid Grid.Column="0" Margin="0,0,8,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Toolbar -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,8,0,8">
+                            <TextBox Width="200" Margin="0,0,8,0"
+                                     materialDesign:HintAssist.Hint="Search name / phone / email"
+                                     Text="{Binding CustomerSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <ComboBox Width="140" Margin="0,0,8,0"
+                                      materialDesign:HintAssist.Hint="Sort by"
+                                      ItemsSource="{Binding SortFields, Mode=OneTime}"
+                                      SelectedItem="{Binding SelectedSortField}"
+                                      Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
+                            <Button Content="+ New" Command="{Binding NewCustomerCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Background="#FFD700" Foreground="Black" Margin="0,0,8,0"/>
+                            <Button Content="Refresh" Command="{Binding LoadCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                        </StackPanel>
+
+                        <!-- Customer DataGrid -->
+                        <DataGrid Grid.Row="1"
+                                  ItemsSource="{Binding FilteredCustomers}"
+                                  SelectedItem="{Binding SelectedCustomer}"
+                                  AutoGenerateColumns="False" IsReadOnly="True"
+                                  materialDesign:DataGridAssist.CellPadding="8 4 8 4">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="110"/>
+                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="150"/>
+                                <DataGridTextColumn Header="Total Purchased"
+                                                    Binding="{Binding TotalPurchased, StringFormat=₹{0:N0}}" Width="130"/>
+                                <DataGridTextColumn Header="Loyalty Pts" Binding="{Binding LoyaltyPoints}" Width="90"/>
+                                <DataGridTextColumn Header="Credit Limit"
+                                                    Binding="{Binding CreditLimit, StringFormat=₹{0:N0}}" Width="100"/>
+                                <DataGridTemplateColumn Header="Actions" Width="140">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Width="28" Height="28" Margin="0,0,4,0" Padding="0"
+                                                        Command="{Binding DataContext.EditCustomerCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource MaterialDesignIconButton}"
+                                                        ToolTip="Edit">
+                                                    <materialDesign:PackIcon Kind="Pencil" Width="14" Height="14"/>
+                                                </Button>
+                                                <Button Width="28" Height="28" Margin="0,0,4,0" Padding="0"
+                                                        Command="{Binding DataContext.SelectLedgerCustomerCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource MaterialDesignIconButton}"
+                                                        ToolTip="View Ledger">
+                                                    <materialDesign:PackIcon Kind="BookOpenVariant" Width="14" Height="14"/>
+                                                </Button>
+                                                <Button Width="28" Height="28" Padding="0"
+                                                        Command="{Binding DataContext.DeleteCustomerCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource MaterialDesignIconButton}"
+                                                        ToolTip="Delete">
+                                                    <materialDesign:PackIcon Kind="Delete" Width="14" Height="14"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+
+                    <!-- Edit form panel -->
+                    <materialDesign:Card Grid.Column="1" Padding="16"
+                                          materialDesign:ElevationAssist.Elevation="Dp2"
+                                          Visibility="{Binding IsEditMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding IsNewCustomer, Converter={StaticResource NewOrEditConverter}}"
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,12"/>
+
+                            <TextBox Margin="0,0,0,8"
+                                     materialDesign:HintAssist.Hint="Name *"
+                                     Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBox Margin="0,0,0,8"
+                                     materialDesign:HintAssist.Hint="Phone *"
+                                     Text="{Binding EditPhone, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBox Margin="0,0,0,8"
+                                     materialDesign:HintAssist.Hint="Email"
+                                     Text="{Binding EditEmail, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBox Margin="0,0,0,8"
+                                     materialDesign:HintAssist.Hint="Address"
+                                     Text="{Binding EditAddress, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     AcceptsReturn="True" MaxLines="2"/>
+                            <TextBox Margin="0,0,0,8"
+                                     materialDesign:HintAssist.Hint="GSTIN"
+                                     Text="{Binding EditGstin, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBox Margin="0,0,0,12"
+                                     materialDesign:HintAssist.Hint="Credit Limit (₹)"
+                                     Text="{Binding EditCreditLimit, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                            <TextBlock Text="{Binding StatusMessage}"
+                                       Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,8"
+                                       Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Save" Command="{Binding SaveCustomerCommand}"
+                                        Style="{StaticResource MaterialDesignRaisedButton}"
+                                        Background="#FFD700" Foreground="Black" Margin="0,0,8,0"/>
+                                <Button Content="Cancel" Command="{Binding CancelEditCommand}"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </materialDesign:Card>
+                </Grid>
+            </TabItem>
+
+            <!-- ── TAB 2: Ledger ── -->
+            <TabItem Header="Ledger">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Filter row -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,8,0,8">
+                        <TextBlock Text="Customer: " VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBlock Text="{Binding LedgerCustomer.Name, FallbackValue='(select from Customers tab)'}"
+                                   VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,16,0"/>
+                        <DatePicker SelectedDate="{Binding LedgerFromDate}"
+                                    materialDesign:HintAssist.Hint="From"
+                                    Width="140" Margin="0,0,8,0"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"/>
+                        <DatePicker SelectedDate="{Binding LedgerToDate}"
+                                    materialDesign:HintAssist.Hint="To"
+                                    Width="140" Margin="0,0,8,0"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"/>
+                        <Button Content="Load Ledger" Command="{Binding LoadLedgerCommand}"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Background="#FFD700" Foreground="Black"/>
+                    </StackPanel>
+
+                    <!-- KPI strip -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                        <materialDesign:Card Padding="10,6" Margin="0,0,8,0"
+                                              materialDesign:ElevationAssist.Elevation="Dp1">
+                            <StackPanel>
+                                <TextBlock Text="Bills" FontSize="10" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                <TextBlock Text="{Binding BillCount}" FontSize="20" FontWeight="Bold"/>
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="10,6" Margin="0,0,8,0"
+                                              materialDesign:ElevationAssist.Elevation="Dp1">
+                            <StackPanel>
+                                <TextBlock Text="Total Billed" FontSize="10" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                <TextBlock FontSize="16" FontWeight="Bold" Foreground="#FFD700">
+                                    <Run Text="₹"/><Run Text="{Binding TotalBilled, StringFormat=N0}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="10,6" Margin="0,0,8,0"
+                                              materialDesign:ElevationAssist.Elevation="Dp1">
+                            <StackPanel>
+                                <TextBlock Text="Total Paid" FontSize="10" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                <TextBlock FontSize="16" FontWeight="Bold" Foreground="#4CAF50">
+                                    <Run Text="₹"/><Run Text="{Binding TotalPaid, StringFormat=N0}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="10,6" Margin="0,0,8,0"
+                                              materialDesign:ElevationAssist.Elevation="Dp1">
+                            <StackPanel>
+                                <TextBlock Text="Outstanding" FontSize="10" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                <TextBlock FontSize="16" FontWeight="Bold" Foreground="#FF5722">
+                                    <Run Text="₹"/><Run Text="{Binding TotalOutstanding, StringFormat=N0}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </StackPanel>
+
+                    <!-- Ledger DataGrid -->
+                    <DataGrid Grid.Row="2"
+                              ItemsSource="{Binding LedgerEntries}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              materialDesign:DataGridAssist.CellPadding="8 4 8 4">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Bill No" Binding="{Binding BillNo}" Width="130"/>
+                            <DataGridTextColumn Header="Date"
+                                                Binding="{Binding BillDate, StringFormat=dd-MM-yyyy}" Width="90"/>
+                            <DataGridTextColumn Header="Items" Binding="{Binding ItemCount}" Width="60"/>
+                            <DataGridTextColumn Header="Grand Total"
+                                                Binding="{Binding GrandTotal, StringFormat=₹{0:N0}}" Width="110"/>
+                            <DataGridTextColumn Header="Amount Paid"
+                                                Binding="{Binding AmountPaid, StringFormat=₹{0:N0}}" Width="110"/>
+                            <DataGridTextColumn Header="Balance Due"
+                                                Binding="{Binding BalanceDue, StringFormat=₹{0:N0}}" Width="100"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80"/>
+                            <DataGridTextColumn Header="Payment Mode" Binding="{Binding PaymentMode}" Width="110"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- ── TAB 3: Loyalty Points ── -->
+            <TabItem Header="Loyalty Points">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="300"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Leaderboard -->
+                    <Grid Grid.Column="0" Margin="0,0,8,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Loyalty Leaderboard (Top 50)"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,8,0,8"/>
+                        <DataGrid Grid.Row="1"
+                                  ItemsSource="{Binding LoyaltyLeaderboard}"
+                                  SelectedItem="{Binding SelectedLoyaltyCustomer}"
+                                  AutoGenerateColumns="False" IsReadOnly="True"
+                                  materialDesign:DataGridAssist.CellPadding="8 4 8 4">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Customer" Binding="{Binding CustomerName}" Width="*"/>
+                                <DataGridTextColumn Header="Tier" Binding="{Binding Tier}" Width="80"/>
+                                <DataGridTextColumn Header="Points" Binding="{Binding TotalPoints}" Width="80"/>
+                                <DataGridTextColumn Header="Points Value"
+                                                    Binding="{Binding PointsValueInRupees, StringFormat=₹{0:N0}}" Width="100"/>
+                                <DataGridTextColumn Header="Total Purchased"
+                                                    Binding="{Binding TotalPurchased, StringFormat=₹{0:N0}}" Width="130"/>
+                                <DataGridTextColumn Header="Next Tier" Binding="{Binding NextTierName}" Width="80"/>
+                                <DataGridTextColumn Header="Pts to Next"
+                                                    Binding="{Binding PointsToNextTier}" Width="90"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+
+                    <!-- Redemption panel -->
+                    <materialDesign:Card Grid.Column="1" Padding="16"
+                                          materialDesign:ElevationAssist.Elevation="Dp2">
+                        <StackPanel>
+                            <TextBlock Text="Redeem Points"
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,12"/>
+
+                            <TextBlock Text="{Binding SelectedLoyaltyCustomer.CustomerName, FallbackValue='Select a customer'}"
+                                       FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <TextBlock Text="Available: " Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                <TextBlock Text="{Binding SelectedLoyaltyCustomer.TotalPoints, StringFormat={}{0:N0}}"
+                                           FontWeight="SemiBold" Foreground="#4CAF50"/>
+                                <TextBlock Text=" pts" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="Tier: " Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                <TextBlock Text="{Binding SelectedLoyaltyCustomer.Tier}"
+                                           FontWeight="SemiBold" Foreground="#FFD700"/>
+                            </StackPanel>
+
+                            <TextBox Margin="0,0,0,8"
+                                     materialDesign:HintAssist.Hint="Points to redeem (100 pts = ₹50)"
+                                     Text="{Binding PointsToRedeem, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                            <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                       Margin="0,0,0,12" FontSize="12">
+                                <Run Text="Discount: ₹"/>
+                                <Run Text="{Binding PointsToRedeem, Converter={StaticResource PointsToDiscountConverter}, StringFormat=N0}"/>
+                            </TextBlock>
+
+                            <TextBlock Text="{Binding LoyaltyStatusMessage}"
+                                       TextWrapping="Wrap" Margin="0,0,0,8" FontSize="12"/>
+
+                            <Button Content="Redeem Points"
+                                    Command="{Binding RedeemPointsCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Background="#FFD700" Foreground="Black"
+                                    IsEnabled="{Binding IsRedeeming, Converter={StaticResource InverseBoolConverter}}"/>
+
+                            <Separator Margin="0,16,0,16"/>
+
+                            <TextBlock Text="Tier Thresholds"
+                                       Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,0,0,8"/>
+                            <TextBlock FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}">
+                                🥈 Silver: ₹0 – ₹99,999&#x0a;🥇 Gold: ₹1,00,000 – ₹4,99,999&#x0a;💎 Platinum: ₹5,00,000+
+                            </TextBlock>
+                        </StackPanel>
+                    </materialDesign:Card>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

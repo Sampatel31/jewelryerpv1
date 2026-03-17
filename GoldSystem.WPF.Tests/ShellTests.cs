@@ -1,3 +1,9 @@
+using GoldSystem.Core.Models;
+using GoldSystem.Core.Services;
+using GoldSystem.Data;
+using GoldSystem.Data.Entities;
+using GoldSystem.Data.Services;
+using GoldSystem.Reports.Services;
 using GoldSystem.WPF.Services;
 using GoldSystem.WPF.ViewModels;
 using GoldSystem.RateEngine.Services;
@@ -330,14 +336,28 @@ public class ScaffoldedViewModelTests
     [Fact]
     public void InventoryViewModel_Instantiates()
     {
-        var vm = new InventoryViewModel(CreateNav(), CreateState());
+        var mockUow = new Mock<IUnitOfWork>();
+        mockUow.Setup(u => u.Items.GetInventoryByBranchAsync(It.IsAny<int>(), default))
+               .ReturnsAsync([]);
+        mockUow.Setup(u => u.Branches.GetActiveBranchesAsync(default)).ReturnsAsync([]);
+        var auditMock = new Mock<GoldSystem.Core.Services.IAuditLogger>();
+        var svc = new GoldSystem.Data.Services.StockTransferService(mockUow.Object, auditMock.Object);
+        var vm = new InventoryViewModel(CreateNav(), CreateState(), mockUow.Object, svc,
+                                        NullLogger<InventoryViewModel>.Instance);
         Assert.NotNull(vm);
     }
 
     [Fact]
     public void CustomerViewModel_Instantiates()
     {
-        var vm = new CustomerViewModel(CreateNav(), CreateState());
+        var mockUow = new Mock<IUnitOfWork>();
+        mockUow.Setup(u => u.Customers.GetAllAsync(default)).ReturnsAsync([]);
+        mockUow.Setup(u => u.Customers.GetTopCustomersByVolumeAsync(It.IsAny<int>(), It.IsAny<int>(), default))
+               .ReturnsAsync([]);
+        var auditMock = new Mock<GoldSystem.Core.Services.IAuditLogger>();
+        var svc = new GoldSystem.Data.Services.StockTransferService(mockUow.Object, auditMock.Object);
+        var vm = new CustomerViewModel(CreateNav(), CreateState(), mockUow.Object, svc,
+                                       NullLogger<CustomerViewModel>.Instance);
         Assert.NotNull(vm);
     }
 
@@ -431,5 +451,23 @@ public class ScaffoldedViewModelTests
 }
 
 /// <summary>
-/// Phase 9 unit tests: AppState, ThemeService, NavigationService,
-/// StatusIndicatorService, ShellViewModel, DashboardViewModel, and all scaffolded ViewModels.
+/// Factory helper for creating BillingViewModel with mocked dependencies in tests.
+/// </summary>
+internal static class BillingViewModelFactory
+{
+    public static BillingViewModel Create(NavigationService nav, AppState appState)
+    {
+        var mockUow = new Mock<IUnitOfWork>();
+        mockUow.Setup(u => u.Customers.GetAllAsync(default)).ReturnsAsync([]);
+        mockUow.Setup(u => u.GoldRates.GetLatestRateAsync(It.IsAny<int>(), default))
+               .ReturnsAsync((GoldRate?)null);
+
+        var screenService = new BillingScreenService(mockUow.Object);
+        var billingEngineMock = new Mock<IBillingEngine>().Object;
+        var pdfMock = new Mock<IBillPdfService>().Object;
+        var calc = new GoldPriceCalculator();
+        var logger = NullLogger<BillingViewModel>.Instance;
+
+        return new BillingViewModel(nav, appState, billingEngineMock, calc, screenService, pdfMock, logger);
+    }
+}
