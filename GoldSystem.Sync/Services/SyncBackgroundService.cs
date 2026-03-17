@@ -48,6 +48,11 @@ public class SyncBackgroundService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            // Yield to the scheduler at the start of each iteration so the loop
+            // never runs as an infinite synchronous tight-loop, even when the
+            // configured interval is zero and all awaited tasks complete immediately.
+            await Task.Yield();
+
             try
             {
                 await _syncPushService.PushPendingSyncsAsync(branchId);
