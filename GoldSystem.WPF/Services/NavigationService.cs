@@ -1,41 +1,73 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
 
 namespace GoldSystem.WPF.Services;
 
 /// <summary>
-/// MVVM navigation service – manages page/view transitions within the application shell.
-/// Full implementation will be completed in Phase 2.
+/// MVVM navigation service – resolves view/viewmodel pairs from DI and
+/// injects them into the shell's content presenter.
 /// </summary>
-public class NavigationService
+public sealed class NavigationService : ObservableObject
 {
-    private Frame? _frame;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly Stack<(Type ViewType, object? Parameter)> _backStack = new();
+    private ContentControl? _contentHost;
+    private Type? _currentViewType;
 
-    public void Initialize(Frame frame)
+    public NavigationService(IServiceProvider serviceProvider)
     {
-        _frame = frame;
+        _serviceProvider = serviceProvider;
     }
 
-    public bool CanNavigateBack => _frame?.CanGoBack ?? false;
-    public bool CanNavigateForward => _frame?.CanGoForward ?? false;
+    public bool CanNavigateBack => _backStack.Count > 0;
 
-    public void NavigateTo<TPage>(object? parameter = null) where TPage : Page, new()
+    public Type? CurrentViewType => _currentViewType;
+
+    /// <summary>Binds the navigation service to the shell's main content area.</summary>
+    public void Initialize(ContentControl contentHost)
     {
-        if (_frame is null)
-            throw new InvalidOperationException("NavigationService has not been initialized. Call Initialize(frame) first.");
-
-        var page = new TPage();
-        _frame.Navigate(page, parameter);
+        _contentHost = contentHost;
     }
 
-    public void NavigateBack()
+    /// <summary>Navigates to the view registered for <typeparamref name="TView"/>.</summary>
+    public void NavigateTo<TView>(object? parameter = null) where TView : UserControl
+        => NavigateTo(typeof(TView), parameter);
+
+    /// <summary>Navigates to the view specified by type, pushing current view onto back-stack.</summary>
+    public void NavigateTo(Type viewType, object? parameter = null)
     {
-        if (_frame?.CanGoBack == true)
-            _frame.GoBack();
+        if (_contentHost is null)
+            throw new InvalidOperationException("NavigationService not initialised. Call Initialize(contentHost) first.");
+
+        if (_currentViewType is not null)
+            _backStack.Push((_currentViewType, parameter));
+
+        ShowView(viewType, parameter);
     }
 
-    public void NavigateForward()
+    /// <summary>Navigates to the previous view on the back-stack.</summary>
+    public bool NavigateBack()
     {
-        if (_frame?.CanGoForward == true)
-            _frame.GoForward();
+        if (!CanNavigateBack) return false;
+        var (viewType, parameter) = _backStack.Pop();
+        ShowView(viewType, parameter);
+        return true;
+    }
+
+    /// <summary>Clears the navigation history and navigates to the given view.</summary>
+    public void NavigateToRoot<TView>(object? parameter = null) where TView : UserControl
+    {
+        _backStack.Clear();
+        ShowView(typeof(TView), parameter);
+    }
+
+    private void ShowView(Type viewType, object? parameter)
+    {
+        var view = (UserControl)_serviceProvider.GetRequiredService(viewType);
+        _currentViewType = viewType;
+        _contentHost!.Content = view;
+        OnPropertyChanged(nameof(CanNavigateBack));
+        OnPropertyChanged(nameof(CurrentViewType));
     }
 }

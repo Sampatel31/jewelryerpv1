@@ -6,6 +6,9 @@ using GoldSystem.Data.Services;
 using GoldSystem.RateEngine;
 using GoldSystem.RateEngine.Interfaces;
 using GoldSystem.RateEngine.Services;
+using GoldSystem.WPF.Services;
+using GoldSystem.WPF.ViewModels;
+using GoldSystem.WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +21,7 @@ namespace GoldSystem.WPF;
 
 /// <summary>
 /// Interaction logic for App.xaml – sets up the .NET Generic Host with
-/// dependency injection, logging, and EF Core before launching the main window.
+/// dependency injection, logging, and EF Core before launching the shell window.
 /// </summary>
 public partial class App : Application
 {
@@ -51,8 +54,8 @@ public partial class App : Application
 
         await _host.StartAsync();
 
-        var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-        mainWindow.Show();
+        var shell = _host.Services.GetRequiredService<ShellWindow>();
+        shell.Show();
     }
 
     private static void ConfigureServices(IServiceCollection services, HostBuilderContext context)
@@ -80,11 +83,11 @@ public partial class App : Application
         services.AddHostedService<RateListenerService>();
         services.AddSingleton<ManualRateEntryService>();
 
-        // Main window
-        services.AddSingleton<MainWindow>();
-
-        // Navigation
-        services.AddSingleton<Services.NavigationService>();
+        // App-wide state & shell services
+        services.AddSingleton<AppState>();
+        services.AddSingleton<NavigationService>();
+        services.AddSingleton<ThemeService>();
+        services.AddSingleton<StatusIndicatorService>();
 
         // Billing Engine services
         services.AddScoped<IBillingEngine, BillingEngine>();
@@ -107,6 +110,57 @@ public partial class App : Application
         services.AddSingleton<IRestockSuggestionsService, RestockSuggestionsService>();
         services.AddSingleton<IAnomalyDetectorService, AnomalyDetectorService>();
         services.AddHostedService<ModelTrainingScheduler>();
+
+        // Shell window and ViewModel
+        services.AddSingleton<ShellWindow>();
+        services.AddSingleton<ShellViewModel>();
+
+        // Dashboard
+        services.AddTransient<DashboardView>();
+        services.AddTransient<DashboardViewModel>();
+
+        // All other Views and ViewModels (scoped to navigation lifetime)
+        services.AddTransient<BillingView>();
+        services.AddTransient<BillingViewModel>();
+
+        services.AddTransient<InventoryView>();
+        services.AddTransient<InventoryViewModel>();
+
+        services.AddTransient<CustomerView>();
+        services.AddTransient<CustomerViewModel>();
+
+        services.AddTransient<GoldRateView>();
+        services.AddTransient<GoldRateViewModel>();
+
+        services.AddTransient<ReportsView>();
+        services.AddTransient<ReportsViewModel>();
+
+        services.AddTransient<SettingsView>();
+        services.AddTransient<SettingsViewModel>();
+
+        services.AddTransient<VendorView>();
+        services.AddTransient<VendorViewModel>();
+
+        services.AddTransient<CategoryView>();
+        services.AddTransient<CategoryViewModel>();
+
+        services.AddTransient<SyncStatusView>();
+        services.AddTransient<SyncStatusViewModel>();
+
+        services.AddTransient<AIInsightsView>();
+        services.AddTransient<AIInsightsViewModel>();
+
+        services.AddTransient<AuditLogView>();
+        services.AddTransient<AuditLogViewModel>();
+
+        services.AddTransient<UserManagementView>();
+        services.AddTransient<UserManagementViewModel>();
+
+        services.AddTransient<BranchView>();
+        services.AddTransient<BranchViewModel>();
+
+        services.AddTransient<AboutView>();
+        services.AddTransient<AboutViewModel>();
     }
 
     protected override async void OnExit(ExitEventArgs e)
