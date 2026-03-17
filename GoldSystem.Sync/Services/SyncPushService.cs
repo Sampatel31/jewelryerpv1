@@ -181,7 +181,20 @@ WHEN NOT MATCHED THEN
         if (string.IsNullOrWhiteSpace(connectionString))
             return "localhost";
 
-        var builder = new SqlConnectionStringBuilder(connectionString);
-        return builder.DataSource?.Split(',')[0].Trim() ?? "localhost";
+        try
+        {
+            var builder = new SqlConnectionStringBuilder(connectionString);
+            return builder.DataSource?.Split(',')[0].Trim() ?? "localhost";
+        }
+        catch (ArgumentException)
+        {
+            // Connection string is not in a recognizable SQL Server format
+            // (e.g. placeholder values like "CONFIGURE_BEFORE_USE").
+            return "localhost";
+        }
+        catch (FormatException)
+        {
+            return "localhost";
+        }
     }
 }
