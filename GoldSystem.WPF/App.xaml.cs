@@ -6,6 +6,7 @@ using GoldSystem.Data.Services;
 using GoldSystem.RateEngine;
 using GoldSystem.RateEngine.Interfaces;
 using GoldSystem.RateEngine.Services;
+using GoldSystem.Reports.Services;
 using GoldSystem.WPF.Services;
 using GoldSystem.WPF.ViewModels;
 using GoldSystem.WPF.Views;
@@ -122,6 +123,8 @@ public partial class App : Application
         // All other Views and ViewModels (scoped to navigation lifetime)
         services.AddTransient<BillingView>();
         services.AddTransient<BillingViewModel>();
+        services.AddScoped<BillingScreenService>();
+        services.AddSingleton<IBillPdfService, BillPdfService>();
 
         services.AddTransient<InventoryView>();
         services.AddTransient<InventoryViewModel>();
