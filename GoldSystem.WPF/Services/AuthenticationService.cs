@@ -1,6 +1,7 @@
 using GoldSystem.Core.Interfaces;
 using GoldSystem.Core.Models;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -16,6 +17,7 @@ public sealed class AuthenticationService : IAuthenticationService
     private readonly IRBACService       _rbacService;
     private readonly IAuditService      _auditService;
     private readonly SecurityPolicy     _policy;
+    private readonly byte[]             _signingKey;
 
     // In-memory stores for tokens and OTPs
     private readonly ConcurrentDictionary<string, (int UserId, DateTime Expiry)> _refreshTokens = new();
@@ -23,19 +25,24 @@ public sealed class AuthenticationService : IAuthenticationService
     private readonly ConcurrentDictionary<string, byte> _revokedTokens = new();
     private readonly ConcurrentDictionary<int, UserActivity> _activities = new();
 
-    private static readonly byte[] _signingKey =
-        Encoding.UTF8.GetBytes("GoldSystemJWT_Phase14_SecretKey!#2026");
-
     public AuthenticationService(
         IPasswordService passwordService,
         IRBACService     rbacService,
         IAuditService    auditService,
-        SecurityPolicy?  policy = null)
+        SecurityPolicy?  policy        = null,
+        IConfiguration?  configuration = null)
     {
         _passwordService = passwordService;
         _rbacService     = rbacService;
         _auditService    = auditService;
         _policy          = policy ?? new SecurityPolicy();
+
+        // Load signing key from configuration; if absent, generate a random ephemeral
+        // key so no fixed secret is ever embedded in source code.
+        var configKey = configuration?["Security:JwtSigningKey"];
+        _signingKey = string.IsNullOrWhiteSpace(configKey)
+            ? RandomNumberGenerator.GetBytes(64)
+            : Encoding.UTF8.GetBytes(configKey);
     }
 
     // ── Authenticate ──────────────────────────────────────────────────────────
@@ -206,7 +213,7 @@ public sealed class AuthenticationService : IAuthenticationService
     private (string token, string refresh) GenerateTokenPair(AppUser user)
     {
         var payload  = $"{user.Id}|{user.Username}|{user.RoleId}|{DateTime.UtcNow.AddHours(8):O}";
-        var token    = CreateSignedToken(payload);
+        var token    = CreateSignedToken(payload, _signingKey);
 
         var rawRefresh = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         _refreshTokens[rawRefresh] = (user.Id, DateTime.UtcNow.AddDays(7));
@@ -214,12 +221,12 @@ public sealed class AuthenticationService : IAuthenticationService
         return (token, rawRefresh);
     }
 
-    private static string CreateSignedToken(string payload)
+    private static string CreateSignedToken(string payload, byte[] signingKey)
     {
         var header     = Convert.ToBase64String(Encoding.UTF8.GetBytes("{\"alg\":\"HS256\"}"));
         var body       = Convert.ToBase64String(Encoding.UTF8.GetBytes(payload));
         var toSign     = $"{header}.{body}";
-        using var hmac = new HMACSHA256(_signingKey);
+        using var hmac = new HMACSHA256(signingKey);
         var sig        = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(toSign)));
         return $"{toSign}.{sig}";
     }
