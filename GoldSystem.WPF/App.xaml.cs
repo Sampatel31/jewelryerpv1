@@ -144,6 +144,18 @@ public partial class App : Application
         services.AddTransient<SettingsView>();
         services.AddTransient<SettingsViewModel>();
 
+        // Phase 13 – Settings & Customization services
+        services.AddSingleton<GoldSystem.Core.Interfaces.ISettingsService, SettingsService>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.IBackupService, BackupService>();
+
+        // Phase 13 – Settings tab ViewModels (transient, created fresh per navigation)
+        services.AddTransient<CompanySettingsViewModel>();
+        services.AddTransient<TaxSettingsViewModel>();
+        services.AddTransient<ThemeSettingsViewModel>();
+        services.AddTransient<BackupSettingsViewModel>();
+        services.AddTransient<UserPreferencesViewModel>();
+        services.AddTransient<AdvancedSettingsViewModel>();
+
         services.AddTransient<VendorView>();
         services.AddTransient<VendorViewModel>();
 

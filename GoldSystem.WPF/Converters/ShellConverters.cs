@@ -72,6 +72,20 @@ public sealed class ZeroToVisibilityConverter : IValueConverter
 }
 
 /// <summary>
+/// Converts a non-empty string to Visibility.Visible, empty/null to Visibility.Collapsed.
+/// Used to show validation messages only when there is text to display.
+/// </summary>
+[ValueConversion(typeof(string), typeof(Visibility))]
+public sealed class StringToVisibilityConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => string.IsNullOrEmpty(value as string) ? Visibility.Collapsed : Visibility.Visible;
+
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}
+
+/// <summary>
 /// Equality converter: returns true when the bound value equals the ConverterParameter string.
 /// Used to bind payment-mode RadioButton.IsChecked to the SelectedPaymentMode string property.
 /// ConvertBack returns the parameter value when checked (sets the property to the mode string).
@@ -84,5 +98,20 @@ public sealed class EqualityConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => value is true ? parameter?.ToString() ?? string.Empty : Binding.DoNothing;
+}
+
+/// <summary>
+/// Returns Red brush when the bound bool is true (error state), otherwise the default text brush.
+/// </summary>
+[ValueConversion(typeof(bool), typeof(System.Windows.Media.Brush))]
+public sealed class BoolToErrorBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object? parameter, CultureInfo culture)
+        => value is true
+            ? System.Windows.Media.Brushes.Red
+            : (object)System.Windows.SystemColors.ControlTextBrush;
+
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
 }
 

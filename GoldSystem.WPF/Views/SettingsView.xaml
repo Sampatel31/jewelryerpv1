@@ -12,30 +12,522 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
             <materialDesign:PackIcon Kind="Cog" Width="32" Height="32"
                                      Foreground="#FFD700"
                                      VerticalAlignment="Center" Margin="0,0,12,0" />
-            <TextBlock Text="Settings"
+            <TextBlock Text="Settings &amp; Customization"
                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                        VerticalAlignment="Center" />
         </StackPanel>
 
-        <materialDesign:Card Grid.Row="1"
-                              materialDesign:ElevationAssist.Elevation="Dp2"
-                              Padding="24">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <materialDesign:PackIcon Kind="Cog" Width="64" Height="64"
-                                         Foreground="#33FFD700"
-                                         HorizontalAlignment="Center" />
-                <TextBlock Text="Settings – Coming in Phase 10-11"
-                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                           HorizontalAlignment="Center"
-                           Foreground="{DynamicResource MaterialDesignBodyLight}"
-                           Margin="0,16,0,0" />
-            </StackPanel>
-        </materialDesign:Card>
+        <!-- 6-Tab TabControl -->
+        <TabControl Grid.Row="1"
+                    SelectedIndex="{Binding SelectedTabIndex}"
+                    Style="{StaticResource MaterialDesignFilledTabControl}">
+
+            <!-- ══════════════════════════════════════════════
+                 TAB 1: Company Settings
+                 ══════════════════════════════════════════════ -->
+            <TabItem Header="Company">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">
+                    <StackPanel MaxWidth="640" HorizontalAlignment="Left">
+                        <TextBlock Text="Company Information"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                   Margin="0,8,0,12" />
+
+                        <TextBox materialDesign:HintAssist.Hint="Company Name"
+                                 Text="{Binding Company.CompanyName, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+
+                        <TextBox materialDesign:HintAssist.Hint="GSTIN (15 characters)"
+                                 Text="{Binding Company.GSTIN, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBlock Text="{Binding Company.GstinValidationMessage}"
+                                   Foreground="Red" FontSize="11" Margin="4,0,0,4"
+                                   Visibility="{Binding Company.GstinValidationMessage,
+                                       Converter={StaticResource StringToVisibilityConverter}}" />
+
+                        <TextBox materialDesign:HintAssist.Hint="Email Address"
+                                 Text="{Binding Company.Email, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBlock Text="{Binding Company.EmailValidationMessage}"
+                                   Foreground="Red" FontSize="11" Margin="4,0,0,4"
+                                   Visibility="{Binding Company.EmailValidationMessage,
+                                       Converter={StaticResource StringToVisibilityConverter}}" />
+
+                        <TextBox materialDesign:HintAssist.Hint="Phone"
+                                 Text="{Binding Company.Phone, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBox materialDesign:HintAssist.Hint="Address"
+                                 Text="{Binding Company.Address, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     materialDesign:HintAssist.Hint="State"
+                                     Text="{Binding Company.State, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                            <TextBox Grid.Column="2"
+                                     materialDesign:HintAssist.Hint="City"
+                                     Text="{Binding Company.City, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        </Grid>
+
+                        <TextBox materialDesign:HintAssist.Hint="Postal Code"
+                                 Text="{Binding Company.PostalCode, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+
+                        <Separator Margin="0,12" />
+                        <TextBlock Text="Bank Details"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                   Margin="0,0,0,8" />
+
+                        <TextBox materialDesign:HintAssist.Hint="Bank Name"
+                                 Text="{Binding Company.BankName, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBox materialDesign:HintAssist.Hint="Account Number"
+                                 Text="{Binding Company.AccountNo, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBox materialDesign:HintAssist.Hint="IFSC Code"
+                                 Text="{Binding Company.IFSC, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                            <Button Content="Save Company"
+                                    Command="{Binding Company.SaveCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Background="#FFD700" Foreground="Black"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Reset"
+                                    Command="{Binding Company.ResetCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding Company.StatusMessage}"
+                                   Margin="0,8,0,0"
+                                   Foreground="{Binding Company.HasError,
+                                       Converter={StaticResource BoolToErrorBrushConverter}}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════
+                 TAB 2: Tax Settings
+                 ══════════════════════════════════════════════ -->
+            <TabItem Header="Tax">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">
+                    <StackPanel MaxWidth="480" HorizontalAlignment="Left">
+                        <TextBlock Text="GST Rates"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                   Margin="0,8,0,12" />
+
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     materialDesign:HintAssist.Hint="CGST Rate (%)"
+                                     Text="{Binding Tax.CGSTRate, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                            <TextBox Grid.Column="2"
+                                     materialDesign:HintAssist.Hint="SGST Rate (%)"
+                                     Text="{Binding Tax.SGSTRate, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        </Grid>
+
+                        <TextBox materialDesign:HintAssist.Hint="IGST Rate (%)"
+                                 Text="{Binding Tax.IGSTRate, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBox materialDesign:HintAssist.Hint="Exempt Threshold (₹)"
+                                 Text="{Binding Tax.ExemptThreshold, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+
+                        <Separator Margin="0,12" />
+                        <TextBlock Text="Default Charges"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                   Margin="0,0,0,8" />
+
+                        <TextBox materialDesign:HintAssist.Hint="Making Charge Default (%)"
+                                 Text="{Binding Tax.DefaultMakingPercent, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBox materialDesign:HintAssist.Hint="Wastage Default (%)"
+                                 Text="{Binding Tax.DefaultWastagePercent, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBox materialDesign:HintAssist.Hint="Stone Charge Default (₹)"
+                                 Text="{Binding Tax.DefaultStoneCharge, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+                        <TextBox materialDesign:HintAssist.Hint="HSN Code"
+                                 Text="{Binding Tax.HSNCode, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,4" />
+
+                        <CheckBox Content="Apply to all Bills"
+                                  IsChecked="{Binding Tax.ApplyToAllBills}"
+                                  Margin="0,8" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Button Content="Save Tax Settings"
+                                    Command="{Binding Tax.SaveCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Background="#FFD700" Foreground="Black"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Reset"
+                                    Command="{Binding Tax.ResetCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding Tax.StatusMessage}"
+                                   Margin="0,8,0,0"
+                                   Foreground="{Binding Tax.HasError,
+                                       Converter={StaticResource BoolToErrorBrushConverter}}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════
+                 TAB 3: Theme & Appearance
+                 ══════════════════════════════════════════════ -->
+            <TabItem Header="Theme">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">
+                    <StackPanel MaxWidth="480" HorizontalAlignment="Left">
+                        <TextBlock Text="Theme &amp; Appearance"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                   Margin="0,8,0,12" />
+
+                        <ToggleButton Content="Dark Mode"
+                                      IsChecked="{Binding Theme.IsDarkMode}"
+                                      Margin="0,4" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Primary Color"
+                                  ItemsSource="{Binding Theme.AvailableColors}"
+                                  SelectedItem="{Binding Theme.PrimaryColor}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,8" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Accent Color"
+                                  ItemsSource="{Binding Theme.AvailableColors}"
+                                  SelectedItem="{Binding Theme.AccentColor}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,4" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Font Size"
+                                  ItemsSource="{Binding Theme.FontSizes}"
+                                  SelectedItem="{Binding Theme.SelectedFontSize}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,8" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Date Format"
+                                  ItemsSource="{Binding Theme.DateFormats}"
+                                  SelectedItem="{Binding Theme.SelectedDateFormat}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,4" />
+
+                        <TextBox materialDesign:HintAssist.Hint="Currency Symbol"
+                                 Text="{Binding Theme.CurrencySymbol, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,8" />
+
+                        <CheckBox Content="Show Splash Screen on Startup"
+                                  IsChecked="{Binding Theme.ShowSplashScreen}"
+                                  Margin="0,4" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                            <Button Content="Apply Theme"
+                                    Command="{Binding Theme.ApplyThemeCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Background="#FFD700" Foreground="Black"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Preview"
+                                    Command="{Binding Theme.PreviewThemeCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Reset to Default"
+                                    Command="{Binding Theme.ResetToDefaultCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding Theme.StatusMessage}"
+                                   Margin="0,8,0,0"
+                                   Foreground="{Binding Theme.HasError,
+                                       Converter={StaticResource BoolToErrorBrushConverter}}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════
+                 TAB 4: Backup & Restore
+                 ══════════════════════════════════════════════ -->
+            <TabItem Header="Backup">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">
+                    <StackPanel MaxWidth="560" HorizontalAlignment="Left">
+                        <TextBlock Text="Backup &amp; Restore"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                   Margin="0,8,0,12" />
+
+                        <TextBlock>
+                            <Run Text="Last Backup: " FontWeight="SemiBold" />
+                            <Run Text="{Binding Backup.LastBackupDisplay}" />
+                        </TextBlock>
+
+                        <TextBox materialDesign:HintAssist.Hint="Backup Location"
+                                 Text="{Binding Backup.BackupLocation, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,8" />
+
+                        <CheckBox Content="Enable Auto-Backup"
+                                  IsChecked="{Binding Backup.AutoBackupEnabled}"
+                                  Margin="0,4" />
+
+                        <TextBox materialDesign:HintAssist.Hint="Backup Interval (hours)"
+                                 Text="{Binding Backup.BackupIntervalHours, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,8" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Button Content="Backup Now"
+                                    Command="{Binding Backup.BackupNowCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Background="#FFD700" Foreground="Black"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Delete Old Backups"
+                                    Command="{Binding Backup.DeleteOldBackupsCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Save Settings"
+                                    Command="{Binding Backup.SaveSettingsCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        </StackPanel>
+
+                        <Separator Margin="0,16" />
+                        <TextBlock Text="Recent Backups"
+                                   Style="{StaticResource MaterialDesignSubtitle2TextBlock}"
+                                   Margin="0,0,0,8" />
+                        <ItemsControl ItemsSource="{Binding Backup.RecentBackups}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <materialDesign:Card Margin="0,4" Padding="12">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding DisplayName}"
+                                                           FontWeight="Medium" />
+                                                <TextBlock Text="{Binding SizeDisplay}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding CreatedAt, StringFormat=\{0:dd-MMM-yyyy\}}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="12,0" />
+                                            <Button Grid.Column="2"
+                                                    Content="Restore"
+                                                    Command="{Binding DataContext.Backup.RestoreCommand,
+                                                        RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding FilePath}"
+                                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    Padding="8,4" />
+                                        </Grid>
+                                    </materialDesign:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{Binding Backup.StatusMessage}"
+                                   Margin="0,8,0,0"
+                                   Foreground="{Binding Backup.HasError,
+                                       Converter={StaticResource BoolToErrorBrushConverter}}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════
+                 TAB 5: User Preferences
+                 ══════════════════════════════════════════════ -->
+            <TabItem Header="Preferences">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">
+                    <StackPanel MaxWidth="480" HorizontalAlignment="Left">
+                        <TextBlock Text="User Preferences"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                   Margin="0,8,0,12" />
+
+                        <CheckBox Content="Show Tips on Startup"
+                                  IsChecked="{Binding Prefs.ShowTipsOnStartup}"
+                                  Margin="0,4" />
+                        <CheckBox Content="Confirm Before Delete"
+                                  IsChecked="{Binding Prefs.ConfirmOnDelete}"
+                                  Margin="0,4" />
+                        <CheckBox Content="Show Notifications"
+                                  IsChecked="{Binding Prefs.ShowNotifications}"
+                                  Margin="0,4" />
+                        <CheckBox Content="Sound Effects"
+                                  IsChecked="{Binding Prefs.SoundEnabled}"
+                                  Margin="0,4" />
+                        <CheckBox Content="Auto-Print Bill After Save"
+                                  IsChecked="{Binding Prefs.AutoPrintBillAfterSave}"
+                                  Margin="0,4" />
+
+                        <TextBox materialDesign:HintAssist.Hint="Default Branch"
+                                 Text="{Binding Prefs.DefaultBranch, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,8" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Auto-Logout (minutes)"
+                                  ItemsSource="{Binding Prefs.AutoLogoutOptions}"
+                                  SelectedItem="{Binding Prefs.AutoLogoutMinutes}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,4" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Decimal Places"
+                                  ItemsSource="{Binding Prefs.DecimalPlacesOptions}"
+                                  SelectedItem="{Binding Prefs.DecimalPlaces}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,8" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Button Content="Save Preferences"
+                                    Command="{Binding Prefs.SaveCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Background="#FFD700" Foreground="Black"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Reset"
+                                    Command="{Binding Prefs.ResetCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding Prefs.StatusMessage}"
+                                   Margin="0,8,0,0"
+                                   Foreground="{Binding Prefs.HasError,
+                                       Converter={StaticResource BoolToErrorBrushConverter}}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════
+                 TAB 6: Advanced Settings
+                 ══════════════════════════════════════════════ -->
+            <TabItem Header="Advanced">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">
+                    <StackPanel MaxWidth="480" HorizontalAlignment="Left">
+                        <TextBlock Text="Advanced Settings"
+                                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                   Margin="0,8,0,12" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Database Type"
+                                  ItemsSource="{Binding Advanced.DatabaseTypes}"
+                                  SelectedItem="{Binding Advanced.DatabaseType}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,4" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Sync Interval (minutes)"
+                                  ItemsSource="{Binding Advanced.SyncIntervalOpts}"
+                                  SelectedItem="{Binding Advanced.SyncIntervalMinutes}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,8" />
+
+                        <ComboBox materialDesign:HintAssist.Hint="Log Level"
+                                  ItemsSource="{Binding Advanced.LogLevels}"
+                                  SelectedItem="{Binding Advanced.LogLevel}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,4" />
+
+                        <CheckBox Content="Enable Debug Mode"
+                                  IsChecked="{Binding Advanced.DebugModeEnabled}"
+                                  Margin="0,8" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,4">
+                            <Button Content="Clear Cache"
+                                    Command="{Binding Advanced.ClearCacheCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Margin="0,0,12,0" />
+                            <TextBlock VerticalAlignment="Center">
+                                <Run Text="Cache: " />
+                                <Run Text="{Binding Advanced.CacheSizeDisplay}" />
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8">
+                            <Button Content="Optimize DB"
+                                    Command="{Binding Advanced.OptimizeDatabaseCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Repair DB"
+                                    Command="{Binding Advanced.RepairDatabaseCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        </StackPanel>
+
+                        <Separator Margin="0,12" />
+                        <TextBlock Text="System Information"
+                                   Style="{StaticResource MaterialDesignSubtitle2TextBlock}"
+                                   Margin="0,0,0,8" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="App Version:" FontWeight="Medium" Margin="0,2" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Advanced.AppVersion}" Margin="0,2" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text=".NET Version:" FontWeight="Medium" Margin="0,2" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Advanced.DotNetVersion}" Margin="0,2" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="DB Size:" FontWeight="Medium" Margin="0,2" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Advanced.DbSizeDisplay}" Margin="0,2" />
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                            <Button Content="Save Advanced"
+                                    Command="{Binding Advanced.SaveCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Background="#FFD700" Foreground="Black"
+                                    Margin="0,0,12,0" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding Advanced.StatusMessage}"
+                                   Margin="0,8,0,0"
+                                   Foreground="{Binding Advanced.HasError,
+                                       Converter={StaticResource BoolToErrorBrushConverter}}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- Bottom bar: Save All -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Margin="0,12,0,0">
+            <TextBlock Text="{Binding StatusMessage}"
+                       VerticalAlignment="Center" Margin="0,0,16,0"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}" />
+            <Button Content="Save All Settings"
+                    Command="{Binding SaveAllCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Background="#FFD700" Foreground="Black" />
+        </StackPanel>
     </Grid>
 </UserControl>
