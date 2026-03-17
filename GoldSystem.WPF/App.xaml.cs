@@ -55,8 +55,43 @@ public partial class App : Application
 
         await _host.StartAsync();
 
+        // Auto-create the SQLite database and apply any pending migrations on first run.
+        await InitialiseDatabaseAsync(_host.Services);
+
         var shell = _host.Services.GetRequiredService<ShellWindow>();
         shell.Show();
+    }
+
+    /// <summary>
+    /// Runs EF Core migrations and seeds the default admin password on first launch.
+    /// The sentinel value <c>CHANGE_ON_FIRST_LOGIN</c> is replaced with a proper
+    /// PBKDF2 hash of the default password so the application is immediately usable
+    /// without any manual database setup.
+    /// </summary>
+    private static async Task InitialiseDatabaseAsync(IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        var context         = scope.ServiceProvider.GetRequiredService<GoldDbContext>();
+        var passwordService = scope.ServiceProvider.GetRequiredService<GoldSystem.Core.Interfaces.IPasswordService>();
+
+        // Apply pending EF Core migrations; creates the database file if it does not exist.
+        await context.Database.MigrateAsync();
+
+        // Replace sentinel password hashes with a real hash on first run.
+        const string sentinel        = "CHANGE_ON_FIRST_LOGIN";
+        const string defaultPassword = "Admin@123456";
+
+        var usersWithSentinel = context.Users.Where(u => u.PasswordHash == sentinel);
+        bool anyUpdated = false;
+
+        foreach (var user in usersWithSentinel)
+        {
+            user.PasswordHash = passwordService.HashPassword(defaultPassword);
+            anyUpdated = true;
+        }
+
+        if (anyUpdated)
+            await context.SaveChangesAsync();
     }
 
     private static void ConfigureServices(IServiceCollection services, HostBuilderContext context)

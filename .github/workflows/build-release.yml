@@ -1,0 +1,207 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  # ─── Build, Test ────────────────────────────────────────────────────────────
+  build-and-test:
+    name: Build & Test (Windows)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore GoldSystem.sln
+
+      - name: Build solution
+        run: dotnet build GoldSystem.sln --configuration Release --no-restore
+
+      - name: Run core unit tests (100+ tests)
+        run: >
+          dotnet test GoldSystem.Tests/GoldSystem.Tests.csproj
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=TestResults-Core.trx"
+          --results-directory ./TestResults
+          --collect:"XPlat Code Coverage"
+
+      - name: Run WPF unit tests
+        run: >
+          dotnet test GoldSystem.WPF.Tests/GoldSystem.WPF.Tests.csproj
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=TestResults-WPF.trx"
+          --results-directory ./TestResults
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: ./TestResults/**/*.trx
+
+  # ─── Publish Self-Contained Executable ──────────────────────────────────────
+  publish:
+    name: Publish win-x64 Self-Contained
+    needs: build-and-test
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore GoldSystem.sln
+
+      - name: Publish self-contained Windows executable
+        run: >
+          dotnet publish GoldSystem.WPF/GoldSystem.WPF.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:EnableCompressionInSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          --output ./publish/GoldJewelleryERP
+
+      - name: Create ZIP package
+        run: >
+          Compress-Archive
+          -Path "./publish/GoldJewelleryERP/*"
+          -DestinationPath "./publish/GoldJewelleryERP-v1.0.0-win-x64.zip"
+          -Force
+        shell: pwsh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GoldJewelleryERP-win-x64
+          path: ./publish/GoldJewelleryERP-v1.0.0-win-x64.zip
+          retention-days: 30
+
+  # ─── Create GitHub Release ───────────────────────────────────────────────────
+  release:
+    name: Create GitHub Release
+    needs: publish
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore GoldSystem.sln
+
+      - name: Publish self-contained Windows executable
+        run: >
+          dotnet publish GoldSystem.WPF/GoldSystem.WPF.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:EnableCompressionInSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          --output ./publish/GoldJewelleryERP
+
+      - name: Create ZIP package
+        run: >
+          Compress-Archive
+          -Path "./publish/GoldJewelleryERP/*"
+          -DestinationPath "./publish/GoldJewelleryERP-${{ github.ref_name }}-win-x64.zip"
+          -Force
+        shell: pwsh
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Gold Jewellery Management System ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
+          files: ./publish/GoldJewelleryERP-${{ github.ref_name }}-win-x64.zip
+          body: |
+            ## 🏅 Gold Jewellery Management System ${{ github.ref_name }}
+
+            Complete desktop ERP for gold jewellery businesses — **no installation required**.
+
+            ---
+
+            ### 🚀 Quick Start
+
+            1. **Download** `GoldJewelleryERP-${{ github.ref_name }}-win-x64.zip`
+            2. **Extract** the ZIP to any folder (e.g. `C:\GoldERP\`)
+            3. **Double-click** `GoldSystem.WPF.exe`
+            4. The SQLite database is created automatically on first launch
+            5. **Login** with the default credentials:
+               - Username: `admin`
+               - Password: `Admin@123456`
+
+            > ⚠️ **Change your password** after the first login via *Settings → Users*.
+
+            ---
+
+            ### ✨ Key Features
+
+            - **Billing & Invoicing** — create, print, and export bills as PDF/Excel
+            - **Inventory Management** — stock tracking, item transfers, low-stock alerts
+            - **Customer Management** — loyalty points, purchase history, GSTIN validation
+            - **Comprehensive Reporting** — PDF/Excel export, GSTR-1 reports
+            - **Gold Rate Engine** — live MCX rate scraping with manual override
+            - **AI Insights** — ML.NET-powered sales forecasting & anomaly detection
+            - **Multi-shop Sync** — near-real-time sync between branches
+            - **Security & RBAC** — 2FA OTP, role-based access control, audit trail
+            - **Settings & Customisation** — themes, company profile, tax rates, backup
+
+            ---
+
+            ### 💻 System Requirements
+
+            - Windows 10 / 11 (64-bit)
+            - 4 GB RAM minimum
+            - 200 MB free disk space
+            - **No .NET installation required** (self-contained)
+
+            ---
+
+            ### 🔑 Default Login
+
+            | Field    | Value         |
+            |----------|---------------|
+            | Username | `admin`        |
+            | Password | `Admin@123456` |
+
+            ---
+
+            ### 📖 Documentation
+
+            - [Quick Start Guide](https://github.com/Sampatel31/jewelryerpv1/blob/main/QUICKSTART.md)
+            - [User Guide](https://github.com/Sampatel31/jewelryerpv1/blob/main/docs/USER_GUIDE.md)
+            - [Release Notes](https://github.com/Sampatel31/jewelryerpv1/blob/main/RELEASE_NOTES.md)
