@@ -333,9 +333,8 @@
 
                             <TextBlock Text="Tier Thresholds"
                                        Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,0,0,8"/>
-                            <TextBlock FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}">
-                                🥈 Silver: ₹0 – ₹99,999&#x0a;🥇 Gold: ₹1,00,000 – ₹4,99,999&#x0a;💎 Platinum: ₹5,00,000+
-                            </TextBlock>
+                            <TextBlock FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                       Text="{Binding LoyaltyTierThresholds}"/>
                         </StackPanel>
                     </materialDesign:Card>
                 </Grid>

@@ -79,6 +79,9 @@ public sealed partial class CustomerViewModel : BaseViewModel
     [ObservableProperty] private string _loyaltyStatusMessage = string.Empty;
     [ObservableProperty] private bool _isRedeeming;
 
+    public static string LoyaltyTierThresholds =>
+        "🥈 Silver: ₹0 – ₹99,999\n🥇 Gold: ₹1,00,000 – ₹4,99,999\n💎 Platinum: ₹5,00,000+";
+
     public CustomerViewModel(
         NavigationService navigation,
         AppState appState,

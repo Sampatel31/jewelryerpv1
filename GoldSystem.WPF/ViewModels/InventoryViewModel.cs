@@ -132,6 +132,14 @@ public sealed partial class InventoryViewModel : BaseViewModel
             AllItems.Where(i => i.Status == "InStock" && i.BranchId == AppState.CurrentBranchId).ToList());
     }
 
+    [RelayCommand]
+    private void SelectTransferItem(InventoryItemDto? item)
+    {
+        if (item is null) return;
+        SelectedTransferItem = item;
+        SelectedTabIndex = 1; // Switch to Stock Transfers tab
+    }
+
     [RelayCommand(CanExecute = nameof(CanTransfer))]
     private async Task TransferItemAsync()
     {

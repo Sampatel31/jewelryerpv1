@@ -83,9 +83,9 @@
                         <Button Content="Refresh" Command="{Binding LoadCommand}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,8,0"/>
                         <Button Content="Transfer →" ToolTip="Transfer selected item to another branch"
-                                Command="{Binding EditCustomerCommand}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}"
-                                IsEnabled="{Binding SelectedItem, Converter={StaticResource NullToFalseConverter}}"/>
+                                Command="{Binding SelectTransferItemCommand}"
+                                CommandParameter="{Binding SelectedItem}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"/>
                     </StackPanel>
 
                     <!-- Items DataGrid -->
