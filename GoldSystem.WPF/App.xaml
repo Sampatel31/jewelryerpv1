@@ -18,6 +18,8 @@
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
             <converters:EqualityConverter x:Key="EqualityConverter" />
+            <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+            <converters:BoolToErrorBrushConverter x:Key="BoolToErrorBrushConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

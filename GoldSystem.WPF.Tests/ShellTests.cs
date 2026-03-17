@@ -377,19 +377,41 @@ public class ScaffoldedViewModelTests
         Assert.NotNull(vm);
     }
 
+    private static SettingsViewModel CreateSettingsVm(ThemeService? theme = null)
+    {
+        var ts   = theme ?? new ThemeService();
+        var svc  = new Mock<GoldSystem.Core.Interfaces.ISettingsService>();
+        var bsvc = new Mock<GoldSystem.Core.Interfaces.IBackupService>();
+        svc.Setup(s => s.LoadCompanySettingsAsync(default)).ReturnsAsync(new GoldSystem.Core.Models.CompanySettings());
+        svc.Setup(s => s.LoadTaxSettingsAsync(default)).ReturnsAsync(new GoldSystem.Core.Models.TaxSettings());
+        svc.Setup(s => s.LoadThemeSettingsAsync(default)).ReturnsAsync(new GoldSystem.Core.Models.ThemeSettings());
+        svc.Setup(s => s.LoadBackupSettingsAsync(default)).ReturnsAsync(new GoldSystem.Core.Models.BackupSettings());
+        svc.Setup(s => s.LoadUserPreferencesAsync(default)).ReturnsAsync(new GoldSystem.Core.Models.UserPreferences());
+        svc.Setup(s => s.LoadAdvancedSettingsAsync(default)).ReturnsAsync(new GoldSystem.Core.Models.AdvancedSettings());
+        bsvc.Setup(b => b.GetDatabaseSizeAsync(default)).ReturnsAsync(0L);
+        return new SettingsViewModel(
+            CreateNav(), CreateState(),
+            new CompanySettingsViewModel(svc.Object),
+            new TaxSettingsViewModel(svc.Object),
+            new ThemeSettingsViewModel(svc.Object, ts),
+            new BackupSettingsViewModel(svc.Object, bsvc.Object),
+            new UserPreferencesViewModel(svc.Object),
+            new AdvancedSettingsViewModel(svc.Object, bsvc.Object));
+    }
+
     [Fact]
     public void SettingsViewModel_IsDarkMode_DefaultFalse()
     {
-        var vm = new SettingsViewModel(CreateNav(), CreateState(), new ThemeService());
-        Assert.False(vm.IsDarkMode);
+        var vm = CreateSettingsVm();
+        Assert.False(vm.Theme.IsDarkMode);
     }
 
     [Fact]
     public void SettingsViewModel_ToggleDarkMode_UpdatesTheme()
     {
         var theme = new ThemeService();
-        var vm = new SettingsViewModel(CreateNav(), CreateState(), theme);
-        vm.IsDarkMode = true;
+        var vm = CreateSettingsVm(theme);
+        vm.Theme.IsDarkMode = true;
         Assert.True(theme.IsDarkMode);
     }
 
