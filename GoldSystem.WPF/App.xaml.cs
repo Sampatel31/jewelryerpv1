@@ -128,6 +128,7 @@ public partial class App : Application
 
         services.AddTransient<InventoryView>();
         services.AddTransient<InventoryViewModel>();
+        services.AddScoped<StockTransferService>();
 
         services.AddTransient<CustomerView>();
         services.AddTransient<CustomerViewModel>();

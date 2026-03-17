@@ -356,7 +356,7 @@ public sealed partial class BillingViewModel : BaseViewModel
         };
     }
 
-    internal void RecalculateTotals()
+    public void RecalculateTotals()
     {
         var lineResults = LineItems.Select(li => new GoldPriceCalculator.BillLineResult(
             NetWeight: li.NetWeight,

@@ -1,3 +1,4 @@
+using System.IO;
 using GoldSystem.Core.Models;
 using GoldSystem.Core.Services;
 using GoldSystem.Data;
@@ -291,7 +292,7 @@ public class BillingViewModelTests
         var engineMock = new Mock<IBillingEngine>();
         var returnedBill = new BillDto(
             BillId: 1, BillNo: "BILL-001",
-            BillDate: DateOnly.Today,
+            BillDate: DateOnly.FromDateTime(DateTime.Today),
             Customer: new CustomerDto(1, "Test", "111"),
             Items: [],
             GoldValue: 1000m, MakingAmount: 100m, WastageAmount: 20m,
