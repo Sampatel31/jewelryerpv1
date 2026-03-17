@@ -193,6 +193,13 @@ public partial class App : Application
 
         services.AddTransient<AboutView>();
         services.AddTransient<AboutViewModel>();
+
+        // Phase 15 – Error handling, logging, caching, and performance services
+        services.AddMemoryCache();
+        services.AddSingleton<GoldSystem.Core.Interfaces.IErrorHandlingService, ErrorHandlingService>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.ILoggingService, LoggingService>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.ICachingService, CachingService>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.IPerformanceService, PerformanceService>();
     }
 
     protected override async void OnExit(ExitEventArgs e)

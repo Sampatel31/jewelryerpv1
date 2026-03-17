@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using DataAnnotationsValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 using System.Text.Json;
 using GoldSystem.Core.Models;
 using GoldSystem.Core.Services;
@@ -46,7 +46,7 @@ public class BillingEngine : IBillingEngine
         // Step 1: Validate request
         var validation = await _validator.ValidateCreateBillAsync(request);
         if (!validation.IsValid)
-            throw new ValidationException(string.Join(", ", validation.Errors));
+            throw new DataAnnotationsValidationException(string.Join(", ", validation.Errors));
 
         // Step 2: Current gold rate must exist
         var currentRate = await _uow.GoldRates.GetLatestRateAsync(request.BranchId)
