@@ -171,8 +171,22 @@ public partial class App : Application
         services.AddTransient<AuditLogView>();
         services.AddTransient<AuditLogViewModel>();
 
-        services.AddTransient<UserManagementView>();
+        // Phase 14 – Security & User Management
+        services.AddSingleton<GoldSystem.Core.Models.SecurityPolicy>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.IPasswordService, PasswordService>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.IRBACService, RBACService>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.IAuditService, AuditService>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.IAuthorizationService, AuthorizationService>();
+        services.AddSingleton<GoldSystem.Core.Interfaces.IAuthenticationService, AuthenticationService>();
+
         services.AddTransient<UserManagementViewModel>();
+        services.AddTransient<RBACViewModel>();
+        services.AddTransient<AuditTrailViewModel>();
+        services.AddTransient<SecuritySettingsViewModel>();
+        services.AddTransient<SecurityViewModel>();
+        services.AddTransient<SecurityView>();
+
+        services.AddTransient<UserManagementView>();
 
         services.AddTransient<BranchView>();
         services.AddTransient<BranchViewModel>();

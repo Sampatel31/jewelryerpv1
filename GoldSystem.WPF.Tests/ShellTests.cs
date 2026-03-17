@@ -1,3 +1,4 @@
+using GoldSystem.Core.Interfaces;
 using GoldSystem.Core.Models;
 using GoldSystem.Core.Services;
 using GoldSystem.Data;
@@ -453,7 +454,12 @@ public class ScaffoldedViewModelTests
     [Fact]
     public void UserManagementViewModel_Instantiates()
     {
-        var vm = new UserManagementViewModel(CreateNav(), CreateState());
+        var rbac     = new Mock<IRBACService>();
+        var pwd      = new Mock<IPasswordService>();
+        var audit    = new Mock<IAuditService>();
+        rbac.Setup(r => r.GetAllUsersAsync(default)).ReturnsAsync(new List<AppUser>());
+        rbac.Setup(r => r.GetAllRolesAsync(default)).ReturnsAsync(new List<AppRole>());
+        var vm = new UserManagementViewModel(rbac.Object, pwd.Object, audit.Object);
         Assert.NotNull(vm);
     }
 
