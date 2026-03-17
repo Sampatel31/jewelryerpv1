@@ -8,34 +8,347 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance vm:ReportsViewModel}"
              Background="{DynamicResource MaterialDesignPaper}">
-    <Grid Margin="24">
+    <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
-            <materialDesign:PackIcon Kind="ChartBar" Width="32" Height="32"
-                                     Foreground="#FFD700"
-                                     VerticalAlignment="Center" Margin="0,0,12,0" />
+        <!-- ── Page header ─────────────────────────────────────────────────── -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+            <materialDesign:PackIcon Kind="FileChartOutline" Width="32" Height="32"
+                                     Foreground="#FFD700" VerticalAlignment="Center"
+                                     Margin="0,0,12,0" />
             <TextBlock Text="Reports"
                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                        VerticalAlignment="Center" />
+            <ProgressBar IsIndeterminate="True" Width="120" Height="4"
+                         Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                         Margin="24,0,0,0" VerticalAlignment="Center" />
         </StackPanel>
 
+        <!-- ── Error banner ────────────────────────────────────────────────── -->
         <materialDesign:Card Grid.Row="1"
-                              materialDesign:ElevationAssist.Elevation="Dp2"
-                              Padding="24">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <materialDesign:PackIcon Kind="ChartBar" Width="64" Height="64"
-                                         Foreground="#33FFD700"
-                                         HorizontalAlignment="Center" />
-                <TextBlock Text="Reports – Coming in Phase 10-11"
-                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                           HorizontalAlignment="Center"
-                           Foreground="{DynamicResource MaterialDesignBodyLight}"
-                           Margin="0,16,0,0" />
+                              Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}"
+                              Background="#FFDDDD" Padding="8,4" Margin="0,0,0,8">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="AlertCircle" Foreground="Red" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding StatusMessage}" Foreground="Red"
+                           Margin="8,0,0,0" VerticalAlignment="Center" />
             </StackPanel>
         </materialDesign:Card>
+
+        <!-- ── Four-tab TabControl ──────────────────────────────────────────── -->
+        <TabControl Grid.Row="2"
+                    SelectedIndex="{Binding SelectedTabIndex}"
+                    Style="{StaticResource MaterialDesignTabControl}">
+
+            <!-- ══════════════════════════════════════════════════════════════
+                 TAB 1 – DAY BOOK
+                 ══════════════════════════════════════════════════════════════ -->
+            <TabItem Header="Day Book">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Controls -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <DatePicker materialDesign:HintAssist.Hint="Date"
+                                    SelectedDate="{Binding FromDate}"
+                                    Width="160" Margin="0,0,12,0" />
+                        <Button Content="Generate"
+                                Command="{Binding GenerateDayBookCommand}"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Background="#FFD700" Foreground="Black"
+                                Margin="0,0,8,0" />
+                        <Button Content="Export PDF"
+                                Command="{Binding ExportDayBookToPdfCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Export Excel"
+                                Command="{Binding ExportDayBookToExcelCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                    </StackPanel>
+
+                    <!-- KPI cards -->
+                    <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,8">
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Bills" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding DayBookBillCount}" FontSize="22" FontWeight="Bold" Foreground="#FFD700" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Total Amount" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding DayBookTotalAmount, StringFormat='₹{0:N0}'}" FontSize="18" FontWeight="Bold" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Total Paid" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding DayBookTotalPaid, StringFormat='₹{0:N0}'}" FontSize="18" FontWeight="Bold" Foreground="Green" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Outstanding" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding DayBookTotalOutstanding, StringFormat='₹{0:N0}'}" FontSize="18" FontWeight="Bold" Foreground="Red" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </UniformGrid>
+
+                    <!-- Data grid -->
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding DayBookLines}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              materialDesign:DataGridAssist.CellPadding="8,4"
+                              CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Date"         Binding="{Binding Date, StringFormat=dd-MMM-yyyy}" Width="100" />
+                            <DataGridTextColumn Header="Bill No"      Binding="{Binding BillNo}"         Width="120" />
+                            <DataGridTextColumn Header="Customer"     Binding="{Binding CustomerName}"   Width="*" />
+                            <DataGridTextColumn Header="Amount ₹"     Binding="{Binding Amount, StringFormat='₹{0:N0}'}"     Width="120" />
+                            <DataGridTextColumn Header="Paid ₹"       Binding="{Binding AmountPaid, StringFormat='₹{0:N0}'}" Width="120" />
+                            <DataGridTextColumn Header="Mode"         Binding="{Binding PaymentMode}"    Width="100" />
+                            <DataGridTextColumn Header="Status"       Binding="{Binding Status}"         Width="80" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════════════════════
+                 TAB 2 – SALES REGISTER
+                 ══════════════════════════════════════════════════════════════ -->
+            <TabItem Header="Sales Register">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <DatePicker materialDesign:HintAssist.Hint="From"
+                                    SelectedDate="{Binding FromDate}" Width="150" Margin="0,0,8,0" />
+                        <DatePicker materialDesign:HintAssist.Hint="To"
+                                    SelectedDate="{Binding ToDate}"   Width="150" Margin="0,0,12,0" />
+                        <Button Content="Generate"
+                                Command="{Binding GenerateSalesRegisterCommand}"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Background="#FFD700" Foreground="Black"
+                                Margin="0,0,8,0" />
+                        <Button Content="Export PDF"
+                                Command="{Binding ExportSalesRegisterToPdfCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Export Excel"
+                                Command="{Binding ExportSalesRegisterToExcelCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                    </StackPanel>
+
+                    <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,8">
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Items Sold" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding SalesItemCount}" FontSize="22" FontWeight="Bold" Foreground="#FFD700" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Total Revenue" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding SalesTotalRevenue, StringFormat='₹{0:N0}'}" FontSize="18" FontWeight="Bold" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Gross Weight (g)" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding SalesTotalGrossWeight, StringFormat='{}{0:N3}g'}" FontSize="18" FontWeight="Bold" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Net Weight (g)" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding SalesTotalNetWeight, StringFormat='{}{0:N3}g'}" FontSize="18" FontWeight="Bold" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </UniformGrid>
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding SalesLines}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              materialDesign:DataGridAssist.CellPadding="8,4"
+                              CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Item Name"    Binding="{Binding ItemName}"                             Width="*" />
+                            <DataGridTextColumn Header="Category"     Binding="{Binding Category}"                             Width="110" />
+                            <DataGridTextColumn Header="Purity"       Binding="{Binding Purity}"                               Width="70" />
+                            <DataGridTextColumn Header="Gross Wt (g)" Binding="{Binding GrossWeight, StringFormat='{}{0:N3}'}"   Width="100" />
+                            <DataGridTextColumn Header="Net Wt (g)"   Binding="{Binding NetWeight, StringFormat='{}{0:N3}'}"     Width="100" />
+                            <DataGridTextColumn Header="Revenue ₹"    Binding="{Binding Revenue, StringFormat='₹{0:N0}'}"     Width="120" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════════════════════
+                 TAB 3 – CUSTOMER LEDGER
+                 ══════════════════════════════════════════════════════════════ -->
+            <TabItem Header="Customer Ledger">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Content="Generate Outstanding"
+                                Command="{Binding GenerateLedgerCommand}"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Background="#FFD700" Foreground="Black"
+                                Margin="0,0,8,0" />
+                        <Button Content="Export PDF"
+                                Command="{Binding ExportLedgerToPdfCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Export Excel"
+                                Command="{Binding ExportLedgerToExcelCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                    </StackPanel>
+
+                    <UniformGrid Grid.Row="1" Columns="2" Margin="0,0,0,8">
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Customers with Outstanding" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding LedgerCustomerCount}" FontSize="22" FontWeight="Bold" Foreground="#FFD700" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Total Outstanding" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding LedgerTotalOutstanding, StringFormat='₹{0:N0}'}" FontSize="22" FontWeight="Bold" Foreground="Red" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </UniformGrid>
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding LedgerLines}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              materialDesign:DataGridAssist.CellPadding="8,4"
+                              CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Customer"       Binding="{Binding CustomerName}"                                       Width="*" />
+                            <DataGridTextColumn Header="Total Billed ₹" Binding="{Binding TotalBilled, StringFormat='₹{0:N0}'}"                Width="130" />
+                            <DataGridTextColumn Header="Total Paid ₹"   Binding="{Binding TotalPaid, StringFormat='₹{0:N0}'}"                  Width="130" />
+                            <DataGridTextColumn Header="Outstanding ₹"  Binding="{Binding OutstandingAmount, StringFormat='₹{0:N0}'}"          Width="130" />
+                            <DataGridTextColumn Header="Outstanding %"  Binding="{Binding OutstandingPercent, StringFormat='{}{0:N1}%'}"         Width="110" />
+                            <DataGridTextColumn Header="Age (Days)"     Binding="{Binding AgeInDays}"                                          Width="90" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Ageing buckets -->
+                    <DataGrid Grid.Row="3" ItemsSource="{Binding AgeingBuckets}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              materialDesign:DataGridAssist.CellPadding="6,3"
+                              CanUserAddRows="False"
+                              MaxHeight="120" Margin="0,8,0,0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Age Range"   Binding="{Binding Range}"                            Width="*" />
+                            <DataGridTextColumn Header="Count"       Binding="{Binding Count}"                            Width="70" />
+                            <DataGridTextColumn Header="Amount ₹"    Binding="{Binding Amount, StringFormat='₹{0:N0}'}"   Width="130" />
+                            <DataGridTextColumn Header="%"           Binding="{Binding Percentage, StringFormat='{}{0:N1}%'}" Width="70" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════════════════════════
+                 TAB 4 – GSTR-1
+                 ══════════════════════════════════════════════════════════════ -->
+            <TabItem Header="GSTR-1">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <ComboBox materialDesign:HintAssist.Hint="Month"
+                                  ItemsSource="{Binding Months}"
+                                  SelectedItem="{Binding SelectedMonth}"
+                                  Width="80" Margin="0,0,8,0" />
+                        <ComboBox materialDesign:HintAssist.Hint="Year"
+                                  ItemsSource="{Binding Years}"
+                                  SelectedItem="{Binding SelectedYear}"
+                                  Width="90" Margin="0,0,12,0" />
+                        <Button Content="Generate"
+                                Command="{Binding GenerateGSTR1Command}"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Background="#FFD700" Foreground="Black"
+                                Margin="0,0,8,0" />
+                        <Button Content="Export JSON"
+                                Command="{Binding ExportGSTR1ToJsonCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Export Excel"
+                                Command="{Binding ExportGSTR1ToExcelCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                    </StackPanel>
+
+                    <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,8">
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Total Invoices" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding Gstr1InvoiceCount}" FontSize="22" FontWeight="Bold" Foreground="#FFD700" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Total Taxable Value" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding Gstr1TotalTaxable, StringFormat='₹{0:N0}'}" FontSize="18" FontWeight="Bold" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Padding="12" Margin="4">
+                            <StackPanel>
+                                <TextBlock Text="Total Tax Liability" Style="{StaticResource MaterialDesignCaptionTextBlock}" />
+                                <TextBlock Text="{Binding Gstr1TotalTax, StringFormat='₹{0:N0}'}" FontSize="18" FontWeight="Bold" Foreground="#B8860B" />
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </UniformGrid>
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding Gstr1Lines}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              materialDesign:DataGridAssist.CellPadding="8,4"
+                              CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Invoice No"   Binding="{Binding InvoiceNo}"                                    Width="120" />
+                            <DataGridTextColumn Header="Date"         Binding="{Binding InvoiceDate, StringFormat=dd-MMM-yyyy}"        Width="100" />
+                            <DataGridTextColumn Header="GSTIN"        Binding="{Binding CustomerGSTIN}"                                Width="160" />
+                            <DataGridTextColumn Header="Customer"     Binding="{Binding CustomerName}"                                 Width="*" />
+                            <DataGridTextColumn Header="HSN"          Binding="{Binding HSNCode}"                                     Width="70" />
+                            <DataGridTextColumn Header="Taxable ₹"    Binding="{Binding TaxableValue, StringFormat='₹{0:N0}'}"        Width="110" />
+                            <DataGridTextColumn Header="CGST ₹"       Binding="{Binding CGST, StringFormat='₹{0:N0}'}"                Width="90" />
+                            <DataGridTextColumn Header="SGST ₹"       Binding="{Binding SGST, StringFormat='₹{0:N0}'}"                Width="90" />
+                            <DataGridTextColumn Header="IGST ₹"       Binding="{Binding IGST, StringFormat='₹{0:N0}'}"                Width="90" />
+                            <DataGridTextColumn Header="Total ₹"      Binding="{Binding TotalInvoiceValue, StringFormat='₹{0:N0}'}"   Width="110" />
+                            <DataGridTextColumn Header="Supply Type"  Binding="{Binding SupplyType}"                                  Width="100" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- ── Status bar ──────────────────────────────────────────────────── -->
+        <Border Grid.Row="3" Background="{DynamicResource MaterialDesignToolBarBackground}"
+                Padding="8,4" Margin="0,4,0,0">
+            <TextBlock Text="{Binding StatusMessage}"
+                       Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                       VerticalAlignment="Center" />
+        </Border>
     </Grid>
 </UserControl>
