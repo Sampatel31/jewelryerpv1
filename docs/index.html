@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gold Jewellery Management System</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d0d0d;
+      color: #f0f0f0;
+      line-height: 1.6;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #b8860b 0%, #d4a017 50%, #f0c040 100%);
+      text-align: center;
+      padding: 80px 20px 60px;
+      color: #111;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; margin-bottom: 0.5rem; }
+    .hero .badge { display: inline-block; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 4px 14px; font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .hero p { font-size: 1.2rem; max-width: 640px; margin: 0 auto 2rem; }
+    .btn {
+      display: inline-block;
+      background: #111;
+      color: #f0c040;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin: 6px;
+      border: 2px solid #f0c040;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn:hover { background: #f0c040; color: #111; }
+    .btn-ghost {
+      background: transparent;
+      color: #111;
+      border-color: #111;
+    }
+    .btn-ghost:hover { background: #111; color: #f0c040; }
+
+    /* ── Sections ── */
+    section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
+    h2 { font-size: 2rem; color: #f0c040; margin-bottom: 1.5rem; text-align: center; }
+    h3 { font-size: 1.25rem; color: #f0c040; margin-bottom: 0.75rem; }
+
+    /* ── Quick Download ── */
+    .download-card {
+      background: #1a1a1a;
+      border: 1px solid #f0c040;
+      border-radius: 12px;
+      padding: 36px;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .download-card p { font-size: 1rem; color: #ccc; margin-bottom: 1.5rem; }
+    .credentials { display: inline-block; background: #111; border: 1px solid #444; border-radius: 8px; padding: 16px 28px; margin-top: 1rem; font-family: monospace; font-size: 1rem; color: #f0c040; }
+    .credentials span { display: block; }
+
+    /* ── Features Grid ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid #2a2a2a;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: #f0c040; }
+    .feature-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .feature-card p { color: #aaa; font-size: 0.95rem; }
+
+    /* ── Steps ── */
+    .steps { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+    .step { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 200px; text-align: center; border: 1px solid #2a2a2a; }
+    .step-num { display: inline-block; background: #f0c040; color: #111; font-weight: 700; font-size: 1.2rem; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin-bottom: 0.75rem; }
+    .step p { color: #aaa; font-size: 0.9rem; margin-top: 0.25rem; }
+
+    /* ── Requirements ── */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 16px; border: 1px solid #2a2a2a; }
+    th { background: #f0c040; color: #111; text-align: left; }
+    td { background: #1a1a1a; color: #ccc; }
+
+    /* ── Footer ── */
+    footer { background: #111; text-align: center; padding: 30px 20px; color: #666; font-size: 0.9rem; }
+    footer a { color: #f0c040; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Hero ── -->
+  <div class="hero">
+    <div class="badge">v1.0.0 — Production Ready</div>
+    <h1>💍 Gold Jewellery<br/>Management System</h1>
+    <p>Complete desktop ERP for gold jewellery businesses. No installation required.</p>
+    <a class="btn" href="https://github.com/Sampatel31/jewelryerpv1/releases/latest">
+      ⬇️ Download Now (Windows)
+    </a>
+    <a class="btn btn-ghost" href="https://github.com/Sampatel31/jewelryerpv1">
+      ⭐ View on GitHub
+    </a>
+  </div>
+
+  <!-- ── Quick Download ── -->
+  <section>
+    <h2>Quick Download &amp; Run</h2>
+    <div class="download-card">
+      <p>
+        Self-contained Windows executable — includes .NET 8 runtime.<br/>
+        Download → Extract → Double-click. Done.
+      </p>
+      <a class="btn" href="https://github.com/Sampatel31/jewelryerpv1/releases/latest"
+         style="font-size:1.1rem; padding:16px 40px;">
+        ⬇️ Download Latest Release
+      </a>
+      <div class="credentials">
+        <span><strong>Default Login</strong></span>
+        <span>Username: <code>admin</code></span>
+        <span>Password: <code>Admin@123456</code></span>
+      </div>
+      <p style="margin-top:1rem; font-size:0.85rem; color:#888;">
+        ⚠️ Change the default password after first login.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Get Started Steps ── -->
+  <section>
+    <h2>Get Started in 3 Steps</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Download</h3>
+        <p>Get the ZIP from the Releases page</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Extract</h3>
+        <p>Unzip to any folder on your PC</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Run</h3>
+        <p>Double-click GoldSystem.WPF.exe</p>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:24px; color:#888;">
+      Database auto-creates on first launch. Login with <code style="color:#f0c040">admin / Admin@123456</code>
+    </p>
+  </section>
+
+  <!-- ── Features ── -->
+  <section>
+    <h2>Features</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🧾</div>
+        <h3>Billing &amp; Invoicing</h3>
+        <p>Create, print, and export professional gold jewellery invoices as PDF or Excel with GST calculations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3>Inventory Management</h3>
+        <p>Track gold items by weight, purity, and HUID. Low-stock alerts and inter-branch transfers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Customer Management</h3>
+        <p>Customer profiles, GSTIN validation, loyalty points, and full purchase history.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Comprehensive Reports</h3>
+        <p>Daily sales, customer statements, inventory reports, and GSTR-1 export.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Gold Rate Engine</h3>
+        <p>Automatic MCX rate scraping with manual override and full rate history.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI Insights</h3>
+        <p>ML.NET-powered sales forecasting, anomaly detection, and restock suggestions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>Multi-Shop Sync</h3>
+        <p>Near-real-time sync engine between branches with automatic conflict resolution.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Security &amp; RBAC</h3>
+        <p>2FA OTP, role-based access control, and a complete audit trail for every action.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3>Settings &amp; Customisation</h3>
+        <p>Company profile, tax rates, light/dark themes, and scheduled backup/restore.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── System Requirements ── -->
+  <section>
+    <h2>System Requirements</h2>
+    <table>
+      <tr><th>Requirement</th><th>Minimum</th></tr>
+      <tr><td>Operating System</td><td>Windows 10 / 11 (64-bit)</td></tr>
+      <tr><td>RAM</td><td>4 GB (8 GB recommended for AI features)</td></tr>
+      <tr><td>Disk Space</td><td>200 MB</td></tr>
+      <tr><td>.NET Runtime</td><td>Not required (self-contained)</td></tr>
+    </table>
+  </section>
+
+  <!-- ── Documentation Links ── -->
+  <section style="text-align:center;">
+    <h2>Documentation</h2>
+    <a class="btn" href="https://github.com/Sampatel31/jewelryerpv1/blob/main/QUICKSTART.md">Quick Start Guide</a>
+    <a class="btn" href="https://github.com/Sampatel31/jewelryerpv1/blob/main/docs/USER_GUIDE.md">User Guide</a>
+    <a class="btn" href="https://github.com/Sampatel31/jewelryerpv1/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+    <a class="btn" href="https://github.com/Sampatel31/jewelryerpv1/blob/main/docs/FAQ.md">FAQ</a>
+    <a class="btn" href="https://github.com/Sampatel31/jewelryerpv1/blob/main/RELEASE_NOTES.md">Release Notes</a>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <p>
+      Gold Jewellery Management System v1.0.0 &mdash;
+      <a href="https://github.com/Sampatel31/jewelryerpv1">GitHub</a> &mdash;
+      <a href="https://github.com/Sampatel31/jewelryerpv1/blob/main/LICENSE">MIT License</a>
+    </p>
+    <p style="margin-top:8px; color:#444;">Built with .NET 8, WPF, EF Core, ML.NET, and MaterialDesignThemes</p>
+  </footer>
+
+</body>
+</html>
