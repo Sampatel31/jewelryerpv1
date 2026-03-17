@@ -39,3 +39,50 @@ public sealed class MenuItemMatchConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => value is true ? parameter : Binding.DoNothing;
 }
+
+/// <summary>
+/// Converts a nullable object to Visibility.
+/// null → Collapsed, non-null → Visible.
+/// </summary>
+[ValueConversion(typeof(object), typeof(Visibility))]
+public sealed class NullToVisibilityConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is string s) return string.IsNullOrEmpty(s) ? Visibility.Collapsed : Visibility.Visible;
+        return value is null ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}
+
+/// <summary>
+/// Converts an integer count to Visibility.
+/// 0 → Visible (shows empty-state placeholder), &gt;0 → Collapsed.
+/// </summary>
+[ValueConversion(typeof(int), typeof(Visibility))]
+public sealed class ZeroToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object? parameter, CultureInfo culture)
+        => value is int i && i == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}
+
+/// <summary>
+/// Equality converter: returns true when the bound value equals the ConverterParameter string.
+/// Used to bind payment-mode RadioButton.IsChecked to the SelectedPaymentMode string property.
+/// ConvertBack returns the parameter value when checked (sets the property to the mode string).
+/// </summary>
+[ValueConversion(typeof(string), typeof(bool))]
+public sealed class EqualityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => value is string s && parameter is string p && s == p;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => value is true ? parameter?.ToString() ?? string.Empty : Binding.DoNothing;
+}
+

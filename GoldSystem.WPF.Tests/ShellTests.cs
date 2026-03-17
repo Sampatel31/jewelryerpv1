@@ -315,14 +315,14 @@ public class ScaffoldedViewModelTests
     [Fact]
     public void BillingViewModel_Instantiates()
     {
-        var vm = new BillingViewModel(CreateNav(), CreateState());
+        var vm = BillingViewModelFactory.Create(CreateNav(), CreateState());
         Assert.NotNull(vm);
     }
 
     [Fact]
     public async Task BillingViewModel_LoadAsync_SetsIsLoadingFalse()
     {
-        var vm = new BillingViewModel(CreateNav(), CreateState());
+        var vm = BillingViewModelFactory.Create(CreateNav(), CreateState());
         await vm.LoadCommand.ExecuteAsync(null);
         Assert.False(vm.IsLoading);
     }
