@@ -371,7 +371,9 @@ public class ScaffoldedViewModelTests
     [Fact]
     public void ReportsViewModel_Instantiates()
     {
-        var vm = new ReportsViewModel(CreateNav(), CreateState());
+        var generator = new Mock<GoldSystem.Core.Interfaces.IReportGenerationService>();
+        var exporter  = new Mock<GoldSystem.Core.Interfaces.IReportExportService>();
+        var vm = new ReportsViewModel(CreateNav(), CreateState(), generator.Object, exporter.Object);
         Assert.NotNull(vm);
     }
 

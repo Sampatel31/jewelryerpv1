@@ -138,6 +138,8 @@ public partial class App : Application
 
         services.AddTransient<ReportsView>();
         services.AddTransient<ReportsViewModel>();
+        services.AddScoped<GoldSystem.Core.Interfaces.IReportGenerationService, ReportGenerationService>();
+        services.AddScoped<GoldSystem.Core.Interfaces.IReportExportService, ReportExportService>();
 
         services.AddTransient<SettingsView>();
         services.AddTransient<SettingsViewModel>();
