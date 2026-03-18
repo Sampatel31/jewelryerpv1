@@ -95,7 +95,7 @@ public class BillingViewModelTests
                .ReturnsAsync((GoldRate?)null);
 
         var ss = screenService ?? new BillingScreenService(mockUow.Object);
-        var nav = new Mock<NavigationService>(new Mock<IServiceProvider>().Object).Object;
+        var nav = new Mock<INavigationService>().Object;
         var appState = new AppState { CurrentBranchId = 1 };
         appState.UpdateRates(75000m, 68750m, 56250m, "Test");
 

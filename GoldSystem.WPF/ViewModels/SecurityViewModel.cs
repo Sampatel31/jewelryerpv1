@@ -21,7 +21,7 @@ public sealed partial class SecurityViewModel : BaseViewModel
     [ObservableProperty] private int _selectedTabIndex;
 
     public SecurityViewModel(
-        NavigationService          navigation,
+        INavigationService          navigation,
         AppState                   appState,
         UserManagementViewModel    userManagement,
         RBACViewModel              rbac,

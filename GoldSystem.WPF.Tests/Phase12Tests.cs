@@ -63,7 +63,7 @@ public class Phase12ModelTests
     [Fact]
     public void LedgerReportLine_OutstandingPercent_IsCorrect()
     {
-        var line = new LedgerReportLine("Raj Kumar", 42, 100_000m, 75_000m, 25_000m, 25.0m, 15);
+        var line = new LedgerReportLine("Raj Kumar", 42, 100_000m, 75_000m, 25_000m, 25.0m, 25);
         Assert.Equal(25.0m, line.OutstandingPercent);
         Assert.Equal(25, line.AgeInDays);
     }

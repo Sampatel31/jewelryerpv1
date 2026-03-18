@@ -10,10 +10,10 @@ namespace GoldSystem.WPF.ViewModels;
 /// </summary>
 public abstract class BaseViewModel : ObservableObject
 {
-    protected readonly NavigationService Navigation;
+    protected readonly INavigationService Navigation;
     protected readonly AppState AppState;
 
-    protected BaseViewModel(NavigationService navigation, AppState appState)
+    protected BaseViewModel(INavigationService navigation, AppState appState)
     {
         Navigation = navigation;
         AppState = appState;

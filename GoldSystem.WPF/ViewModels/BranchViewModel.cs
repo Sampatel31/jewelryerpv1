@@ -8,7 +8,7 @@ public sealed partial class BranchViewModel : BaseViewModel
 {
     [ObservableProperty] private bool _isLoading;
 
-    public BranchViewModel(NavigationService navigation, AppState appState)
+    public BranchViewModel(INavigationService navigation, AppState appState)
         : base(navigation, appState) { }
 
     [RelayCommand]

@@ -54,10 +54,10 @@ public class BillingScreenService
 
         return all
             .Where(c => c.BranchId == branchId &&
-                        (c.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
-                         c.Phone.StartsWith(q, StringComparison.OrdinalIgnoreCase)))
+                        ((c.Name != null && c.Name.Contains(q, StringComparison.OrdinalIgnoreCase)) ||
+                         (c.Phone != null && c.Phone.StartsWith(q, StringComparison.OrdinalIgnoreCase))))
             .Take(20)
-            .Select(c => new CustomerDto(c.CustomerId, c.Name, c.Phone));
+            .Select(c => new CustomerDto(c.CustomerId, c.Name ?? string.Empty, c.Phone ?? string.Empty));
     }
 
     /// <summary>Returns the current 24K rate for a branch, or null if unavailable.</summary>

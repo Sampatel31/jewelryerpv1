@@ -34,7 +34,7 @@ public sealed partial class DashboardViewModel : BaseViewModel
     public List<(string Label, decimal Value)> RateTrendData { get; private set; } = new();
 
     public DashboardViewModel(
-        NavigationService navigation,
+        INavigationService navigation,
         AppState appState,
         IUnitOfWork uow,
         ILogger<DashboardViewModel> logger)

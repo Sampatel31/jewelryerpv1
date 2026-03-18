@@ -25,7 +25,7 @@ public sealed partial class SettingsViewModel : BaseViewModel
     [ObservableProperty] private string _statusMessage = string.Empty;
 
     public SettingsViewModel(
-        NavigationService        navigation,
+        INavigationService        navigation,
         AppState                 appState,
         CompanySettingsViewModel  company,
         TaxSettingsViewModel      tax,

@@ -11,7 +11,7 @@ public sealed partial class SyncStatusViewModel : BaseViewModel
     [ObservableProperty] private DateTime _lastSyncTime;
     [ObservableProperty] private bool _isLoading;
 
-    public SyncStatusViewModel(NavigationService navigation, AppState appState)
+    public SyncStatusViewModel(INavigationService navigation, AppState appState)
         : base(navigation, appState) { }
 
     [RelayCommand]

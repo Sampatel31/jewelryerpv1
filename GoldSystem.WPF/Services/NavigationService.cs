@@ -8,7 +8,7 @@ namespace GoldSystem.WPF.Services;
 /// MVVM navigation service – resolves view/viewmodel pairs from DI and
 /// injects them into the shell's content presenter.
 /// </summary>
-public sealed class NavigationService : ObservableObject
+public sealed class NavigationService : ObservableObject, INavigationService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly Stack<(Type ViewType, object? Parameter)> _backStack = new();

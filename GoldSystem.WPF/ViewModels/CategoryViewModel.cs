@@ -8,7 +8,7 @@ public sealed partial class CategoryViewModel : BaseViewModel
 {
     [ObservableProperty] private bool _isLoading;
 
-    public CategoryViewModel(NavigationService navigation, AppState appState)
+    public CategoryViewModel(INavigationService navigation, AppState appState)
         : base(navigation, appState) { }
 
     [RelayCommand]

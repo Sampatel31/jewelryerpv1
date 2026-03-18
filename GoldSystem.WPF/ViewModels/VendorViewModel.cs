@@ -8,7 +8,7 @@ public sealed partial class VendorViewModel : BaseViewModel
 {
     [ObservableProperty] private bool _isLoading;
 
-    public VendorViewModel(NavigationService navigation, AppState appState)
+    public VendorViewModel(INavigationService navigation, AppState appState)
         : base(navigation, appState) { }
 
     [RelayCommand]

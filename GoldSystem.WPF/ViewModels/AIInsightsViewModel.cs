@@ -10,7 +10,7 @@ public sealed partial class AIInsightsViewModel : BaseViewModel
     [ObservableProperty] private string _forecastSummary = string.Empty;
     [ObservableProperty] private string _trendSignal = string.Empty;
 
-    public AIInsightsViewModel(NavigationService navigation, AppState appState)
+    public AIInsightsViewModel(INavigationService navigation, AppState appState)
         : base(navigation, appState) { }
 
     [RelayCommand]

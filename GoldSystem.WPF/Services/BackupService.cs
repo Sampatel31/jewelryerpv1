@@ -30,7 +30,7 @@ public sealed class BackupService : IBackupService
 
         Directory.CreateDirectory(destinationFolder);
 
-        var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
         var zipFileName = $"Backup_{timestamp}.zip";
         var zipFilePath = Path.Combine(destinationFolder, zipFileName);
 
