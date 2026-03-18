@@ -83,7 +83,7 @@ public sealed partial class CustomerViewModel : BaseViewModel
         "🥈 Silver: ₹0 – ₹99,999\n🥇 Gold: ₹1,00,000 – ₹4,99,999\n💎 Platinum: ₹5,00,000+";
 
     public CustomerViewModel(
-        NavigationService navigation,
+        INavigationService navigation,
         AppState appState,
         IUnitOfWork uow,
         StockTransferService transferService,

@@ -64,7 +64,7 @@ public sealed partial class InventoryViewModel : BaseViewModel
     [ObservableProperty] private bool _isTransferring;
 
     public InventoryViewModel(
-        NavigationService navigation,
+        INavigationService navigation,
         AppState appState,
         IUnitOfWork uow,
         StockTransferService transferService,

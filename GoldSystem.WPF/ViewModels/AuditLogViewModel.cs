@@ -8,7 +8,7 @@ public sealed partial class AuditLogViewModel : BaseViewModel
 {
     [ObservableProperty] private bool _isLoading;
 
-    public AuditLogViewModel(NavigationService navigation, AppState appState)
+    public AuditLogViewModel(INavigationService navigation, AppState appState)
         : base(navigation, appState) { }
 
     [RelayCommand]

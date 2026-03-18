@@ -75,7 +75,7 @@ public sealed partial class BillingViewModel : BaseViewModel
     [ObservableProperty] private string _currentRateDisplay = "Rate: –";
 
     public BillingViewModel(
-        NavigationService navigation,
+        INavigationService navigation,
         AppState appState,
         IBillingEngine billingEngine,
         GoldPriceCalculator calculator,

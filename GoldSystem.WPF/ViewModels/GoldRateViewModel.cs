@@ -8,7 +8,7 @@ public sealed partial class GoldRateViewModel : BaseViewModel
 {
     [ObservableProperty] private bool _isLoading;
 
-    public GoldRateViewModel(NavigationService navigation, AppState appState)
+    public GoldRateViewModel(INavigationService navigation, AppState appState)
         : base(navigation, appState) { }
 
     [RelayCommand]

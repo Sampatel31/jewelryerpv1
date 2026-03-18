@@ -9,6 +9,6 @@ public sealed partial class AboutViewModel : BaseViewModel
     public string AppTitle => "Gold Jewellery Management System";
     public string AppDescription => "Complete ERP for gold jewellery shops with billing, inventory, sync, and AI insights.";
 
-    public AboutViewModel(NavigationService navigation, AppState appState)
+    public AboutViewModel(INavigationService navigation, AppState appState)
         : base(navigation, appState) { }
 }

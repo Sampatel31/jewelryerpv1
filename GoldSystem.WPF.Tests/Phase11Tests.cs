@@ -242,7 +242,7 @@ public class InventoryViewModelTests
         uow.Setup(u => u.Branches.GetActiveBranchesAsync(default)).ReturnsAsync([]);
         var audit = new Mock<IAuditLogger>();
         var svc = new StockTransferService(uow.Object, audit.Object);
-        var nav = new Mock<NavigationService>(new Mock<IServiceProvider>().Object).Object;
+        var nav = new Mock<INavigationService>().Object;
         var state = new AppState { CurrentBranchId = 1 };
         var vm = new InventoryViewModel(nav, state, uow.Object, svc, NullLogger<InventoryViewModel>.Instance);
         return (vm, uow);
@@ -386,7 +386,7 @@ public class CustomerViewModelTests
            .ReturnsAsync([]);
         var audit = new Mock<IAuditLogger>();
         var svc = new StockTransferService(uow.Object, audit.Object);
-        var nav = new Mock<NavigationService>(new Mock<IServiceProvider>().Object).Object;
+        var nav = new Mock<INavigationService>().Object;
         var state = new AppState { CurrentBranchId = 1 };
         var vm = new CustomerViewModel(nav, state, uow.Object, svc, NullLogger<CustomerViewModel>.Instance);
         return (vm, uow);

@@ -73,7 +73,7 @@ public sealed partial class ReportsViewModel : BaseViewModel
     public static IReadOnlyList<int> Years  { get; } = Enumerable.Range(DateTime.Today.Year - 3, 5).ToList();
 
     public ReportsViewModel(
-        NavigationService navigation,
+        INavigationService navigation,
         AppState appState,
         IReportGenerationService generator,
         IReportExportService exporter)

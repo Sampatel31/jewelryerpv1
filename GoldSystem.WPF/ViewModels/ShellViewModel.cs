@@ -11,7 +11,7 @@ namespace GoldSystem.WPF.ViewModels;
 /// </summary>
 public sealed partial class ShellViewModel : ObservableObject
 {
-    private readonly NavigationService _navigation;
+    private readonly INavigationService _navigation;
     private readonly AppState _appState;
     private readonly StatusIndicatorService _statusIndicator;
     private readonly ThemeService _themeService;
@@ -26,7 +26,7 @@ public sealed partial class ShellViewModel : ObservableObject
     public StatusIndicatorService StatusIndicator => _statusIndicator;
 
     public ShellViewModel(
-        NavigationService navigation,
+        INavigationService navigation,
         AppState appState,
         StatusIndicatorService statusIndicator,
         ThemeService themeService)
