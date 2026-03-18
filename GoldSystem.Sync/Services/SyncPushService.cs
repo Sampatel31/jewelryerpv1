@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using GoldSystem.Data;
 using GoldSystem.Sync.Models;
 using Microsoft.Data.SqlClient;
@@ -26,6 +27,12 @@ public class SyncPushService : ISyncPushService
     private readonly IUnitOfWork _uow;
     private readonly INetworkConnectivityService _connectivityService;
     private readonly ILogger<SyncPushService> _logger;
+
+    // Compiled regex for extracting the server/host value from simplified connection strings
+    // (e.g. "Server=192.168.1.100" or "Data Source=myserver\instance").
+    private static readonly Regex ServerValueRegex = new(
+        @"(?:Server|Data\s+Source|DataSource)\s*=\s*([^;,]+)",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public SyncPushService(
         IUnitOfWork uow,
@@ -181,7 +188,17 @@ WHEN NOT MATCHED THEN
         if (string.IsNullOrWhiteSpace(connectionString))
             return "localhost";
 
-        var builder = new SqlConnectionStringBuilder(connectionString);
-        return builder.DataSource?.Split(',')[0].Trim() ?? "localhost";
+        try
+        {
+            var builder = new SqlConnectionStringBuilder(connectionString);
+            return builder.DataSource?.Split(',')[0].Trim() ?? "localhost";
+        }
+        catch (ArgumentException)
+        {
+            // Fall back to regex for simplified / non-standard connection strings
+            // (e.g. "Server=192.168.1.100" without additional key-value pairs).
+            var match = ServerValueRegex.Match(connectionString);
+            return match.Success ? match.Groups[1].Value.Split(',')[0].Trim() : "localhost";
+        }
     }
 }
