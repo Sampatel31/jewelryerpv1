@@ -181,7 +181,16 @@ WHEN NOT MATCHED THEN
         if (string.IsNullOrWhiteSpace(connectionString))
             return "localhost";
 
-        var builder = new SqlConnectionStringBuilder(connectionString);
-        return builder.DataSource?.Split(',')[0].Trim() ?? "localhost";
+        try
+        {
+            var builder = new SqlConnectionStringBuilder(connectionString);
+            return builder.DataSource?.Split(',')[0].Trim() ?? "localhost";
+        }
+        catch (Exception ex) when (ex is ArgumentException or FormatException or KeyNotFoundException)
+        {
+            // Connection string is not a valid SQL Server connection string
+            // (e.g. a sentinel value like "CONFIGURE_BEFORE_USE" or a SQLite URI).
+            return "localhost";
+        }
     }
 }
